@@ -20,6 +20,7 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
         	IQueryable<TE> query = _dbSet;
         	if (disableTracking) query = query.AsNoTracking(); 
         	if (include != null) query = include(query);
+		return await query.FirstOrDefaultAsync(predicate);
     	}
 	#endregion
 }
