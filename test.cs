@@ -5,10 +5,10 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
 	private TR _localContext;  //fields
 	private readonly DbSet<TE> _dbSet;
 	
-	private IDbFactory<TR> DbFactory { get; set }  //properties
+	private IDbFactory<TR> DbFactory { get; set }  //props
 	protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
 	#endregion
-	protected RepositoryBase(IDbFactory<TR> dbFactory)  //injection
+	protected RepositoryBase(IDbFactory<TR> dbFactory) 
 	{
 		DbFactory = dbFactory;
 		_dbSet = InitContext.Set<TE>();
