@@ -7,13 +7,13 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
 	
 	private IDbFactory<TR> DbFactory { get; set }   //properties
 	protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
-	#endregion
 	
-	protected RepositoryBase(IDbFactory<TR> dbFactory)
+	protected RepositoryBase(IDbFactory<TR> dbFactory)	//injection
 	{
 		DbFactory = dbFactory;
 		_dbSet = InitContext.Set<TE>();
 	}
+	#endregion
 	
 	#region implementation
 	public virtual async Task<IEnumerable<TE>> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, 
@@ -25,3 +25,33 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
     }
 }
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
