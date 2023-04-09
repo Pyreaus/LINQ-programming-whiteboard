@@ -18,7 +18,7 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
 		IIncludableQueryable<TE, object>> include = null, bool disableTracking = true)
    	{
         	IQueryable<TE> query = _dbSet;
-        	if (disableTracking != null) query = query.AsNoTracking(); 
+        	if (disableTracking) query = query.AsNoTracking(); 
         	if (include != null) query = include(query);
     	}
 	#endregion
