@@ -14,7 +14,6 @@ public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbConte
 		_dbSet = InitContext.Set<TE>();
 	}
 	#endregion
-	
 	#region implementation
 	public virtual async Task<IEnumerable<TE>> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, 
 		Func<IQueryable<TE>, IIncludableQueryable<TE, object>> include = null, bool disableTracking = true)
