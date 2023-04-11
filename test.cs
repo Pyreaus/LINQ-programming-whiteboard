@@ -4,7 +4,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 {
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
 	{
-		#region properties & fields
+		#region infrastructure 
 		private TR _localContext;  //fields
 		private readonly DbSet<TE> _dbSet;
 
