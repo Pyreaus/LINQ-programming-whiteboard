@@ -22,7 +22,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
             		return _dbSet.GroupBy(keySelector);
        		}
 		public virtual async Task<IEnumerable<TE>> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>,
-			IIncludableQueryable<TE, object>> include=null, bool disableTracking=true)
+			IIncludableQueryable<TE, object>> include = null, bool disableTracking = true)
 		{
 			IQueryable<TE> query = _dbSet;
 			if (disableTracking) query = query.AsNoTracking(); 
