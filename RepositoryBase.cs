@@ -17,7 +17,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 			_dbSet = InitContext.Set<TE>();
 		}
 		#region implementation
-		public IQueryable<IGrouping<int, TEntityType>> GroupBy(Expression<Func<TE, int>> keySelector)
+		public virtual IQueryable<IGrouping<int, TEntityType>> GroupBy(Expression<Func<TE, int>> keySelector)
        		{
             		return _dbSet.GroupBy(keySelector);
        		}
