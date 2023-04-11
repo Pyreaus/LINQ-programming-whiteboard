@@ -17,6 +17,10 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 			_dbSet = InitContext.Set<TE>();
 		}
 		#region implementation
+		public IQueryable<IGrouping<int, TEntityType>> GroupBy(Expression<Func<TEntityType, int>> keySelector)
+       		{
+            		return _dbSet.GroupBy(keySelector);
+       		}
 		public virtual async Task<IEnumerable<TE>> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>,
 			IIncludableQueryable<TE, object>> include=null, bool disableTracking=true)
 		{
@@ -34,10 +38,6 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 			IEnumerable<TE> objects = _dbSet.Where(predicate).AsEnumerable();
 			foreach (obj in objects) _dbSet.Remove(obj);
 		}
-	        public IQueryable<IGrouping<int, TEntityType>> GroupBy(Expression<Func<TEntityType, int>> keySelector)
-       		{
-            		return _dbSet.GroupBy(keySelector);
-       		}
 		#endregion
 		
 		//  [...]
