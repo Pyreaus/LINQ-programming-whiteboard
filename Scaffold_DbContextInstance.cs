@@ -1,5 +1,3 @@
-// using imports 
-
 namespace // i.e. NoelsWhiteboard.Api.Context
 {
 	public class ReboxContext : DbContext
