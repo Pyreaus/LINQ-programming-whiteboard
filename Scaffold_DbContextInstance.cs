@@ -22,10 +22,7 @@ public class ReboxContext : DbContext
 	
 	public override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		modelBuilder.Entity<User>(entity =>
-		{
-			entitiy.Property(x => x.Id).HasColumnName("ID");
-		}
+		modelBuilder.Entity<User>(entity => entitiy.Property(x => x.Id).HasColumnName("ID"));
 		modelBuilder.Entity<Entry>().ToView("Entry").HasKey(x => x.EntryId); 
 	}
 }	
