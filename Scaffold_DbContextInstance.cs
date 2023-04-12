@@ -1,28 +1,33 @@
-public class ReboxContext : DbContext
+// using imports 
+
+namespace // i.e. NoelsWhiteboard.Api.Context
 {
-	public string ConnectionString { get; set; }
-	public ReboxContext()
+	public class ReboxContext : DbContext
 	{
-	}
-	public ReboxContext(DbContextOptions<ReboxContext> options) : base(options) {}
-	public ReboxContext(string connectionString) : base()
-	{
-		ConnecitonString = connectionString;
-	}
-  	#region sets
-	public virtual DbSet<Comp> Comps { get; set; }
-	public virtual DbSet<User> Users { get; set; }
-	public virtual DbSet<Entry> Entries { get; set; }
-	#endregion
-	protected override void OnConfiguring(DbContextOptionsBuilder options)
-	{
-		options.UseSqlServer(ConnectionString, x => x.MigrationsAssembly("NoelsWhiteboard.Api.Migrations"));
-		base.OnConfiguring(optionsBuilder);
-	}
-	
-	public override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		modelBuilder.Entity<User>(entity => entitiy.Property(x => x.Id).HasColumnName("ID"));
-		modelBuilder.Entity<Entry>().ToView("Entry").HasKey(x => x.EntryId); 
-	}
-}	
+		public string ConnectionString { get; set; }
+		public ReboxContext()
+		{
+		}
+		public ReboxContext(DbContextOptions<ReboxContext> options) : base(options) {}
+		public ReboxContext(string connectionString) : base()
+		{
+			ConnecitonString = connectionString;
+		}
+		#region sets
+		public virtual DbSet<Comp> Comps { get; set; }
+		public virtual DbSet<User> Users { get; set; }
+		public virtual DbSet<Entry> Entries { get; set; }
+		#endregion
+		protected override void OnConfiguring(DbContextOptionsBuilder options)
+		{
+			options.UseSqlServer(ConnectionString, x => x.MigrationsAssembly("NoelsWhiteboard.Api.Migrations"));
+			base.OnConfiguring(optionsBuilder);
+		}
+
+		public override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<User>(entity => entitiy.Property(x => x.Id).HasColumnName("ID"));
+			modelBuilder.Entity<Entry>().ToView("Entry").HasKey(x => x.EntryId); 
+		}
+	}	
+}
