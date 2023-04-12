@@ -9,11 +9,11 @@ public class ReboxContext : DbContext
 	{
 		ConnecitonString = connectionString;
 	}
-  
+  	#region sets
 	public virtual DbSet<Comp> Comps { get; set; }
 	public virtual DbSet<User> Users { get; set; }
 	public virtual DbSet<Entry> Entries { get; set; }
-	
+	#endregion
 	protected override void OnConfiguring(DbContextOptionsBuilder options)
 	{
 		options.UseSqlServer(ConnectionString, x => x.MigrationsAssembly("NoelsWhiteboard.Api.Migrations"));
