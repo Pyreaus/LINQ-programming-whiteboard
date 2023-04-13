@@ -7,8 +7,12 @@
                     	).ForMember(dest => dest.Number, opt => opt.Ignore());
         }
     }        //configuring mismatched properties for ViewModel (DTO) mapping 
-            
+           
 
+			IEnumerable<EntityDTO> EntityDTO = _mapper.Map(<IEnumerable<SourceModel>, IEnumerable<EntityDTO>>(SourceObject); 
+                                                                                // using the mapped DTO in controller
+								       
+								      
 namespace // i.e. NoelsWhiteboard.Api.Context
 {
 	public class ReboxContext : DbContext
