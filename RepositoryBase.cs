@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Query; // + system libraries
-
 namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 {
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
