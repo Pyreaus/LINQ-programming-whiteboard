@@ -2,12 +2,12 @@
     {
         public AutoMapperProfiles()
         {     
-            CreateMap<Offer, OfferViewModel>().ForMember(
+            CreateMap<Entity, EntityViewModel>().ForMember(
                     dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}");
                 ).ForMember(
                     dest => dest.Number, opt => opt.Ignore());
         }
-    }        //configuring mismatched properties for DTO mapping 
+    }        //configuring mismatched properties for ViewModel (DTO) mapping 
             
 
 namespace // i.e. NoelsWhiteboard.Api.Context
