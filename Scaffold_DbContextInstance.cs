@@ -1,3 +1,15 @@
+    public class AutoMapperProfiles : Profile
+    {
+        public AutoMapperProfiles()
+        {     
+            CreateMap<Offer, OfferViewModel>().ForMember(
+                    dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}");
+                ).ForMember(
+                    dest => dest.Number, opt => opt.Ignore());
+        }
+    }        //configuring mismatched properties for DTO mapping 
+            
+
 namespace // i.e. NoelsWhiteboard.Api.Context
 {
 	public class ReboxContext : DbContext
