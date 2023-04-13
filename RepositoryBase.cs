@@ -1,4 +1,4 @@
-// using imports 
+using Microsoft.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Query; // + system libraries
 
 namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 {
