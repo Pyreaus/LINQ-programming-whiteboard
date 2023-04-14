@@ -8,8 +8,8 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 
 		private IDbFactory<TR> DbFactory { get; set; }  //props
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
-		#endregion
-		protected RepositoryBase(IDbFactory<TR> dbFactory) //injecting IDbFactory instance 
+		#endregion   //injecting IDbFactory instance 
+		protected RepositoryBase(IDbFactory<TR> dbFactory) 
 		{
 			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
 			_dbSet = InitContext.Set<TE>();
