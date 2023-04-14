@@ -34,7 +34,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 		public virtual void Delete(Expression<Func<TE, bool>> predicate)
 		{
 			IEnumerable<TE> objects = _dbSet.Where(predicate).AsEnumerable();
-			foreach (obj in objects) _dbSet.Remove(obj);
+			foreach (TE obj in objects) _dbSet.Remove(obj);
 		}
 		#endregion
 		
