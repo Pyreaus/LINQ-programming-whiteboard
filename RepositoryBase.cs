@@ -11,7 +11,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 		#endregion
 		protected RepositoryBase(IDbFactory<TR> dbFactory) //injecting context-specific dbFactory 
 		{
-			DbFactory = dbFactory;
+			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
 			_dbSet = InitContext.Set<TE>();
 		}
 		#region implementation
