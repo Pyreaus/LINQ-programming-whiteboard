@@ -3,8 +3,8 @@
         public AutoMapperProfiles()
         {     
             CreateMap<Entity, EntityViewModel>().ForMember(
-                    dest => dest.Info, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName} {src.dob.getCurrentAge()}"
-		    	)).ForMember(dest => dest.Number, opt => opt.Ignore());
+                    dest => dest.Info, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName} {src.dob.getCurrentAge()}")
+			).ForMember(dest => dest.Number, opt => opt.Ignore());
         }
     }        //configuring mismatched properties for ViewModel (DTO) mapping 
            
