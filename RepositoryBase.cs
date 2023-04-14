@@ -8,11 +8,11 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 
 		private IDbFactory<TR> DbFactory { get; set; }  //props
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
-		#endregion   //injecting IDbFactory instance 
+		#endregion  
 		protected RepositoryBase(IDbFactory<TR> dbFactory) 
 		{
 			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-			_dbSet = InitContext.Set<TE>();
+			_dbSet = InitContext.Set<TE>();  //injecting IDbFactory instance 
 		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>
