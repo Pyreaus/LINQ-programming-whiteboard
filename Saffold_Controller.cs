@@ -6,11 +6,11 @@
         {
             Offer offerToUpdate = offerService.GetById(id);
             if (offerToUpdate==null) return NotFound(id);
-                                                                            // I should be using AutoMapper here with Ignore() in profile mapping 
+                                                                            
             offerToUpdate.Caption = createUpdateOfferViewModel.Caption;
             offerToUpdate.Description = createUpdateOfferViewModel.Description;
             offerToUpdate.ImgPath = createUpdateOfferViewModel.ImgPath;
-            offerService.Update(offerToUpdate);
+            offerService.Update(offerToUpdate);                                  // I should be using AutoMapper here with Ignore() in mappings // 
 
             return NoContent();
         }
