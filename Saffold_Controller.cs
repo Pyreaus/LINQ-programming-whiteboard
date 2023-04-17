@@ -1,7 +1,7 @@
                // [...]  controller class definition up here ^       
 
         // PUT: api/Offer/5
-        [HttpPut("[controller]/{id:int}")]
+        [HttpPut("[controller]/[action]/{id:int}")]
         public IActionResult<int?> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {
             Offer offerToUpdate = offerService.GetById(id);
@@ -15,7 +15,7 @@
             return NoContent();
         }
         // DELETE: api/Offer/5
-        [HttpDelete("[controller]/{id:int}")]
+        [HttpDelete("[controller]/[action]/{id:int}")]
         public IActionResult<Offer?,int?> DeleteOffer([FromRoute] int id)
         {
             Offer offerToDelete = offerService.GetById(id);
@@ -27,7 +27,7 @@
         }
 
          // GET: api/Offer/5
-        [HttpGet("[controller]/{id:int}")]
+        [HttpGet("[controller]/[action]/{id:int}")]
         public IActionResult<int?, OfferViewModel?> GetOffer([FromRoute] int id)
         {
             Offer offer = offerService.GetById(id);
