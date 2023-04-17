@@ -8,11 +8,11 @@
         }
     }        //configuring mismatched properties for ViewModel (DTO) mapping 
     
-           	 	[HttpGet()]
+           	 	[HttpGet()]						 // using the mapped DTO in controller
 			public async Task<IActionresult<IEnumerable<EntityDTO>?>> GetAll([FromBody] string filter=null)
 			{
 				return Ok(await localSet.Select(SourceObj => _mapper.Map(<IEnumerable<TSourceModel>,IEnumerable<EntityDTO>>(SourceObj))); 
- 			}                                                       // using the mapped DTO in controller						       
+ 			}                                                       						       
 								      
 namespace // i.e. NoelsWhiteboard.Api.Context      
 {
