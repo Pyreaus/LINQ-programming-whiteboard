@@ -8,10 +8,10 @@
         }
     }        //configuring mismatched properties for ViewModel (DTO) mapping 
     
-           	 	[HttpPost("[contoller]/[action]")]						                                 // using the mapped DTO in controller
+           	 	[HttpPost("[contoller]/[action]")]					
 			public async Task<IActionresult<IEnumerable<ReadDTO>?>> AddEntity([FromBody] CreateDTO obj)
 			{
-				SourceObj Obj = _mapper.Map<CreateDTO, SourceObj>(obj);
+				SourceObj Obj = _mapper.Map<CreateDTO, SourceObj>(obj);         // using the mapped DTO in controller
 				localSet.Add(Obj);
 				return Ok(await localSet.Select(Obj => _mapper.Map<TSourceModel,ReadDTO>(Obj))); 
  			}                                                       						       
