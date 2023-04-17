@@ -10,7 +10,7 @@
             offerToUpdate.Caption = createUpdateOfferViewModel.Caption;
             offerToUpdate.Description = createUpdateOfferViewModel.Description;
             offerToUpdate.ImgPath = createUpdateOfferViewModel.ImgPath;
-            offerService.Update(offerToUpdate);                                  // I should be using AutoMapper here with Ignore() in mappings // 
+            offerService.Update(offerToUpdate);                                // I should be using AutoMapper here with Ignore() in map configuration 
 
             return NoContent();
         }
