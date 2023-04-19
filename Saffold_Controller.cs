@@ -30,8 +30,8 @@
         [HttpGet("[controller]/[action]/{id:int}")]
         public IActionResult<int?, OfferViewModel?> GetOffer([FromRoute] int id)
         {
+            if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
             Offer offer = offerService.GetById(id);
-            if (offer == null) return NotFound(id);
 
             PeopleFinderUser peopleFinderUser = userService.GetById(offer.CreatorId);
             OfferViewModel offerVM = new OfferViewModel
