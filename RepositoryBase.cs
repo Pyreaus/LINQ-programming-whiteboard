@@ -12,7 +12,7 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 		protected RepositoryBase(IDbFactory<TR> dbFactory) 
 		{
 			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-			_dbSet = InitContext.Set<TE>();  //injecting IDbFactory instance 
+			_dbSet = InitContext.Set<TE>(); 
 		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(
