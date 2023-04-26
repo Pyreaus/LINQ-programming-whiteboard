@@ -33,6 +33,11 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 			IEnumerable<TE> objects = _dbSet.Where(predicate).AsEnumerable();
 			foreach (TE obj in objects) _dbSet.Remove(obj);
 		}
+		public virtual void Update(TE entity)
+		{
+			_dbSet.Attach(entity);
+			InitContext.Entry(entity).state = EntityState.Modified;
+		}
 		#endregion
 		
 		//  [...]
