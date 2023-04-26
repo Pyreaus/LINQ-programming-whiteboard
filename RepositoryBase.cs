@@ -1,4 +1,4 @@
-namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
+namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 {
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
 	{
