@@ -1,3 +1,8 @@
+using System.Linq.Expressions;
+using [NoelsWhiteboard.Api.Context].Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+
 namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 {
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
