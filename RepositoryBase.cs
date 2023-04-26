@@ -27,16 +27,16 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
        		{
             		return _dbSet.GroupBy(keySelector);
        		}
+		public virtual void Update(TE entity)
+		{
+			_dbSet.Attach(entity);
+			InitContext.Entry(entity).state = EntityState.Modified;
+		}
 		public virtual void Delete(TE entity) => _dbSet.Remove(entity);
 		public virtual void Delete(Expression<Func<TE, bool>> predicate)
 		{
 			IEnumerable<TE> objects = _dbSet.Where(predicate).AsEnumerable();
 			foreach (TE obj in objects) _dbSet.Remove(obj);
-		}
-		public virtual void Update(TE entity)
-		{
-			_dbSet.Attach(entity);
-			InitContext.Entry(entity).state = EntityState.Modified;
 		}
 		#endregion
 		
