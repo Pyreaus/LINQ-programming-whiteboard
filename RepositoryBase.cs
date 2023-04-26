@@ -15,8 +15,8 @@ namespace // i.e. NoelsWhiteboard.Api.Context.Infrastructure
 			_dbSet = InitContext.Set<TE>();  //injecting IDbFactory instance 
 		}
 		#region implementation
-		public virtual async Task<TE?> FirstOrDefaultAsync(
-			Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE,object>> include = null, bool disableTracking = true)
+		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE,object
+			>> include = null, bool disableTracking = true)
 		{
 			IQueryable<TE> query = _dbSet;
 			if (disableTracking) query = query.AsNoTracking(); 
