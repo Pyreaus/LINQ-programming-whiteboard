@@ -3,10 +3,10 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
 	{
 		#region infrastructure 
-		private TR _localContext;	                  //fields 
+		private TR _localContext;	         //fields 
 		private readonly DbSet<TE> _dbSet;
 
-		private IDbFactory<TR> DbFactory { get; set; }    //props
+		private IDbFactory<TR> DbFactory { get; set; }                     //props
 		protected TR InitContext => _localContext ??= DbFactory.Init();
 		#endregion  
 		protected RepositoryBase(IDbFactory<TR> dbFactory) 
