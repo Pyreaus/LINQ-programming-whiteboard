@@ -28,7 +28,7 @@
 
          // GET: api/Offer/GetOffer/5
         [HttpGet("[controller]/[action]/{id:int}")]
-        public async IActionResult<int?, OfferViewModel?> GetOffer([FromRoute] int id)
+        public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
             if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
             Offer offer = offerService.GetById(id);
