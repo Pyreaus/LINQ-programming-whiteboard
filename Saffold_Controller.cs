@@ -2,7 +2,7 @@
 
         // PUT: api/Offer/Edit/5
         [HttpPut("[controller]/[action]/{id:int}")]
-        public Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
+        public async Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {   
             if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
           
@@ -16,7 +16,7 @@
         }
         // DELETE: api/Offer/DeleteOffer/5
         [HttpDelete("[controller]/[action]/{id:int}")]
-        public Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
+        public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
         {
             if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
           
@@ -28,7 +28,7 @@
 
          // GET: api/Offer/GetOffer/5
         [HttpGet("[controller]/[action]/{id:int}")]
-        public IActionResult<int?, OfferViewModel?> GetOffer([FromRoute] int id)
+        public async IActionResult<int?, OfferViewModel?> GetOffer([FromRoute] int id)
         {
             if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
             Offer offer = offerService.GetById(id);
