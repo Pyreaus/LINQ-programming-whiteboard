@@ -4,7 +4,7 @@
         [HttpPut("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {   
-            if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
           
             Offer offerToUpdate = offerService.GetById(id);                                                            
             offerToUpdate.Caption = createUpdateOfferViewModel.Caption;           //
@@ -18,7 +18,7 @@
         [HttpDelete("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
           
             Offer offerToDelete = offerService.GetById(id);
             offerService.Delete(offerToDelete);
@@ -30,7 +30,7 @@
         [HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) == null or is not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
             Offer offer = offerService.GetById(id);
 
             PeopleFinderUser peopleFinderUser = userService.GetById(offer.CreatorId);
