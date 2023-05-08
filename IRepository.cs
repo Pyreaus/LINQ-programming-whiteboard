@@ -9,6 +9,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
     /// <typeparam name="T">Type of the entity for which the repository is used</typeparam>
     public interface IRepository<T> where T : class
     {
+        IQueryable<IGrouping<int, T>> GroupBy(Expression<Func<T, int>> keySelector);
         /// <summary>
         /// Adds a new entity
         /// </summary>
@@ -26,8 +27,6 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// </summary>
         /// <param name="entity">Entity to be deleted</param>
         void Delete(T entity);
-        
-        IQueryable<IGrouping<int, T>> GroupBy(Expression<Func<T, int>> keySelector);
         
         /// <summary>
         /// Asynchronously gets all entities of type T filtered by predicate
