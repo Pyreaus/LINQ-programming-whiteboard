@@ -10,23 +10,6 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
     public interface IRepository<T> where T : class
     {
         IQueryable<IGrouping<int, T>> GroupBy(Expression<Func<T, int>> keySelector);
-        /// <summary>
-        /// Adds a new entity
-        /// </summary>
-        /// <param name="entity">Entity to be added</param>
-        void Add(T entity);
-
-        /// <summary>
-        /// Updates a specific entity
-        /// </summary>
-        /// <param name="entity">Entity to be updated</param>
-        void Update(T entity);
-
-        /// <summary>
-        /// Deletes a specific entity
-        /// </summary>
-        /// <param name="entity">Entity to be deleted</param>
-        void Delete(T entity);
         
         /// <summary>
         /// Asynchronously gets all entities of type T filtered by predicate
