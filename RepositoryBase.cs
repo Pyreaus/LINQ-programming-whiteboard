@@ -33,11 +33,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
        		{
           		 return disableTracking ? await _dbSet.AsNoTracking().ToListAsync() : await _dbSet.ToListAsync();
         	}
-		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector)
-       		{
-            		return _dbSet.GroupBy(keySelector);
-       		}
-		
+		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
 		public virtual void Update(TE entity)
 		{
 			_dbSet.Attach(entity);
