@@ -15,6 +15,12 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			_dbSet = InitContext.Set<TE>(); 
 		}
 		#region implementation
+		public virtual IQueryable<TE?> GetAllAsQueryable(Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include=null, bool disableTracking=true)
+        	{
+          		 IQueryable<TE> query = _dbSet;
+         	         if (disableTracking) query = query.AsNoTracking();
+         		 return include != null ? include(query) : query;
+     		}
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
 			IIncludableQueryable<TE,object>>? include=null, bool disableTracking=true)
 		{
