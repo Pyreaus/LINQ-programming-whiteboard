@@ -29,10 +29,15 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
          	         if (disableTracking) query = query.AsNoTracking();
          		 return include != null ? include(query) : query;
      		}
+		public virtual async Task<IEnumerable<TE>> GetAllAsync(bool disableTracking = true)
+       		{
+          		 return disableTracking ? await _dbSet.AsNoTracking().ToListAsync() : await _dbSet.ToListAsync();
+        	}
 		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector)
        		{
             		return _dbSet.GroupBy(keySelector);
        		}
+		
 		public virtual void Update(TE entity)
 		{
 			_dbSet.Attach(entity);
