@@ -15,6 +15,14 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			_dbSet = InitContext.Set<TE>(); 
 		}
 		#region implementation
+		public virtual async Task<IEnumerable<TE?>> GetManyAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
+			IIncludableQueryable<TE, object>>? include =null, bool disableTracking =true)
+      		{
+			IQueryable<TE> query = _dbSet;
+			if (disableTracking) query = query.AsNoTracking(); 
+			if (include != null) query = include(query);
+			return await query.Where(predicate).ToListAsync();
+     	        }
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
 			IIncludableQueryable<TE,object>>? include = null, bool disableTracking = true)
 		{
