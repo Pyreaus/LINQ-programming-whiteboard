@@ -15,6 +15,10 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			_dbSet = InitContext.Set<TE>(); 
 		}
 		#region implementation
+		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector)
+       		{
+            		return _dbSet.GroupBy(keySelector);
+       		}
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
 			IIncludableQueryable<TE,object>>? include=null, bool disableTracking=true)
 		{
@@ -23,10 +27,6 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			if (include != null) query = include(query);
 			return await query.FirstOrDefaultAsync(predicate);
 		}
-		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector)
-       		{
-            		return _dbSet.GroupBy(keySelector);
-       		}
 		public virtual void Update(TE entity)
 		{
 			_dbSet.Attach(entity);
