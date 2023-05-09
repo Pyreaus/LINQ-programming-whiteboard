@@ -6,7 +6,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		private TR _localContext;	         //fields 
 		private readonly DbSet<TE> _dbSet;
 
-		private IDbFactory<TR> DbFactory { get; set; }                     //props
+		private IDbFactory<TR> DbFactory { get; }                     //props
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
 		#endregion  
 		protected RepositoryBase(IDbFactory<TR> dbFactory) 
