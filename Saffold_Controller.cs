@@ -14,19 +14,8 @@
 
             return NoContent();
         }
-        // DELETE: api/Offer/DeleteOffer/5
-        [HttpDelete("[controller]/[action]/{id:int}")]
-        public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
-        {
-            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
-          
-            Offer offerToDelete = offerService.GetById(id);
-            offerService.Delete(offerToDelete);
-
-            return Ok(offerToDelete);
-        }
-
          // GET: api/Offer/GetOffer/5
+        [ActionName("GetOffer") 
         [HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
@@ -49,6 +38,17 @@
             };
             
             return Ok(offerVM);
+        }
+         // DELETE: api/Offer/DeleteOffer/5
+        [HttpDelete("[controller]/[action]/{id:int}")]
+        public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
+        {
+            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
+          
+            Offer offerToDelete = offerService.GetById(id);
+            offerService.Delete(offerToDelete);
+
+            return Ok(offerToDelete);
         }
 
 
