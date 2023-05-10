@@ -14,8 +14,8 @@
 
             return NoContent();
         }
-         // GET: api/Offer/GetOffer/5
-        [ActionName("GetOffer") 
+        // GET: api/Offer/GetOffer/5
+        [ActionName("GetOffer")]
         [HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
