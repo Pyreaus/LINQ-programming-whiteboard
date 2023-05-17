@@ -1,10 +1,10 @@
-<ng-container *ngIf="!(employees$ | async)?.length; else empTable"></ng-container>
-<div *ngIf="!(employees$ | async)?.length" class="h-100 pb-5 d-flex align-items-center justify-content-center">
+<ng-container *ngIf="!(employees$|async)?.length; else empTable"></ng-container>
+<div *ngIf="!(employees$|async)?.length" class="h-100 pb-5 d-flex align-items-center justify-content-center">
     <strong class="mr-3">Loading...</strong>
     <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
 </div>
 <ng-template #empTable>
-<div style="max-width:1000px;" [hidden]="!employees$" class="container mt-5 pb-5">
+<div style="max-width:1000px;" [hidden]="!(employees$|async)?.length" class="container mt-5 pb-5">
     <div class="row">
         <div class="col-2 col-sm-3" style="position:relative;left:10px"><h2>Employees:</h2></div>
         <div class="col-10 col-sm-9">
@@ -68,7 +68,7 @@
         </button>
       </div>
       <div class="modal-body">
-         <employee-delete [employee]="selectedEmp"></employee-delete>
+        <employee-delete *ngIf="modalOpen" [employee]="selectedEmp"></employee-delete>
       </div>
       <div class="modal-footer bg-light">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
