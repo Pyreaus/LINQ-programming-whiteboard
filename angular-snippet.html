@@ -2,80 +2,73 @@
 
 <div *ngIf="!(employees$|async)?.length" class="h-100 pb-5 d-flex align-items-center justify-content-center">
     <strong class="mr-3">Loading...</strong>
-    <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
+    <div class="spinner-border text-dark mb-1 " role="status" aria-hidden="true"></div>
 </div>
 <ng-template #empTable>
-<div style="max-width:1000px;" [hidden]="!(employees$|async)?.length" class="container mt-5 pb-5">
+<div [hidden]="!(employees$|async)?.length" class="container mt-4 pb-5" style="max-width:1000px;">
     <div class="row">
-        <div class="col-2 col-sm-3" style="position:relative;left:10px"><h2>Employees:</h2></div>
+        <div class="col-2 col-sm-3" style="position:relative;left:60px;"><h2>{{ entity }}s:</h2></div>
         <div class="col-10 col-sm-9">
-            <a href="javascript:void(0);" [routerLink]="['/employee/add',0]" class="btn btn-primary float-right">Add Employee:</a>
-        </div></div>
+            <a href="javascript:void(0);" [routerLink]="['/employee/add',0]" class="btn btn-link pr-0 mt-1 float-right">Add {{ entity }}</a>
+        </div>
+    </div>
     <div class="row">
-        <div class="col-12 col-sm-12">
+        <div class="col-12 col-sm-12" style="left:50px;">
             <table class="table table-striped" style="table-layout:fixed;word-wrap:break-word;width:auto;">
                 <thead>
-                    <th style="position:static;max-width:200px !important;"><span class="d-flex flex-nowrap"><span class="my-auto text-nowrap">Employee Id</span>
+                    <th style="position:static;max-width:200px !important;"><span class="d-flex flex-nowrap"><span class="my-auto mr-1 text-nowrap">{{ entity }} Id</span>
                         <div class="d-none d-md-inline-block ml-2 position-static" style="min-width:0px;">
-                            <input [(ngModel)]="idFil" class=" form-control" style="min-width:0px;max-width:85px !important;" type="text" placeholder="Filter:"
+                            <input [(ngModel)]="idFil" class=" form-control" style="min-width:0px;max-width:80px !important;max-height:26px;" type="text" placeholder="Filter:"
                         /></div></span>
                     </th>
                     <th style="position:static;"><span class="d-flex flex-nowrap"><span class="my-auto text-nowrap">Name</span>
                         <div class="ml-2 d-none d-md-inline-block position-static">
-                            <input [(ngModel)]="depFil" class="form-control" style="max-width:92px;min-width:0px;" type="text" placeholder="Filter:"
+                            <input [(ngModel)]="nameFil" class="form-control" style="max-width:80px !important;min-width:0px;max-height:26px;" type="text" placeholder="Filter:"
                         /></div></span>
                     </th>
-                    <th style="vertical-align:middle;max-width: 50px !important;">Email</th>
+                    <th style="vertical-align:middle;max-width: 50px !important;word-wrap:normal;">Email</th>
                     <th style="vertical-align:middle;">Phone</th>
                     <th style="vertical-align:middle;max-width: 90px !important;">Options</th>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let emp of (employees$ | async | filter: idFil: depFil)">
-                        <td style="max-width:300px !important;">{{ emp.id }}</td>
+                    <tr *ngFor="let emp of (employees$ | async | filter: idFil : nameFil)">
+                        <td style="max-width:250px !important;">{{ emp.id }}</td>
                         <td>{{ emp.name }}</td>
                         <td style="max-width:240px !important;">{{ emp.email }}</td>
                         <td>{{ emp.phone }}</td>
                         <td><span class="flex-md-nowrap d-flex flex-wrap">
                             <a href="javascript:void(0);" [routerLink]="['/employee/edit',emp.id]" class="btn mr-1 btn-outline-primary" style="max-height:30px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="mb-1 bi bi-pencil-square" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="mb-3 bi bi-pencil-square" fill="currentColor">
                                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
                             /></svg></a>
                             <button (click)="openDeleteModal(emp)" data-toggle="modal" class="btn mr-1 px-2 py-0 btn btn-outline-danger" data-target="#exampleModalCenter" data-backdrop="static" data-keyboard="false" style="max-height:30px;">
-                            <span class="d-flex align-items-center">
+                                <span class="d-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mr-1 bi bi-trash3" viewBox="0 0 16 16">
                                 <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
                               </svg>Delete
                             </span></button></span>
-                        </td>
-                    </tr>
+                        </td></tr>
                 </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</ng-template>
-
-<button (click)="openEditView()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter" data-backdrop="static" data-keyboard="false">
-  <!-- temp development button to test modal -->
-</button>
+            </table></div></div></div></ng-template>
 
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button (click)="closeEditView()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+  <div class="modal-dialog modal-dialog-centered" style="width:auto;" role="document">
+    <div class="modal-content" style="width:auto;">
+      <div class="modal-header bg-light" style="width:auto;">
+        <h5 class="modal-title" id="exampleModalLongTitle">Remove Field</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body mr-2" style="width:auto;">
         <employee-delete *ngIf="modalOpen" [employee]="selectedEmp"></employee-delete>
       </div>
-      <div class="modal-footer bg-light">
+      <div class="modal-footer bg-light" style="width:auto;">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button (click)="closeDeleteModal(selectedEmp.id)" data-dismiss="modal" type="button" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>
 </div>
+
