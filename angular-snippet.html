@@ -2,7 +2,7 @@
 
 <div *ngIf="!(employees$|async)?.length" class="h-100 pb-5 d-flex align-items-center justify-content-center">
     <strong class="mr-3">Loading...</strong>
-    <div class="spinner-border text-dark mb-1 " role="status" aria-hidden="true"></div>
+    <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
 </div>
 <ng-template #empTable>
 <div [hidden]="!(employees$|async)?.length" class="container mt-4 pb-5" style="max-width:1000px;">
