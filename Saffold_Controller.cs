@@ -2,6 +2,7 @@
                
         // GET: api/v1/Offer/GetOffers/{token}
         [ActionName("GetOffers"),HttpGet("[action]/{token:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
         public async Task<IActionResult> GetOffers([FromRoute] int token)
         {
             IEnumerable<Offer?> offers = await offerService.GetOffersAsync(token);
@@ -10,6 +11,7 @@
         }               
         // PUT: api/v1/Offer/Edit/5
         [ActionName("Edit"),HttpPut("[action]/{id:guid}")]
+       [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
         public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] AddModifyOfferVM addModifyOfferVM)
         {   
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
@@ -24,6 +26,7 @@
         }
         // GET: api/v1/Offer/GetOffer/5
         [ActionName("GetOffer"),HttpGet("[action]/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] Guid id)
         {
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
@@ -48,6 +51,7 @@
         }
         // DELETE: api/v1/Offer/DeleteOffer/5
         [ActionName("DeleteOffer"),HttpDelete("[action]/{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] Guid id)
         {
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
