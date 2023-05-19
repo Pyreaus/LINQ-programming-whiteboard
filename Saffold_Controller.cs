@@ -12,7 +12,7 @@
         [ActionName("Edit"),HttpPut("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {   
-            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
+            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
           
             Offer offerToUpdate = offerService.GetById(id);                                                            
             offerToUpdate.Caption = createUpdateOfferViewModel.Caption;           //
@@ -26,7 +26,7 @@
         [ActionName("GetOffer"),HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
+            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
             Offer offer = offerService.GetById(id);
 
             PeopleFinderUser peopleFinderUser = userService.GetById(offer.CreatorId);
@@ -50,7 +50,7 @@
         [ActionName("DeleteOffer"),HttpDelete("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
+            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
           
             Offer offerToDelete = offerService.GetById(id);
             offerService.Delete(offerToDelete);
