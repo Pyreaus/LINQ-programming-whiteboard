@@ -87,7 +87,7 @@
 
 <ng-template #addView>
   <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='add'">
-    <h3>Add New Employee:</h3> <!-- [class]="name.invalid && (name.dirty || name.touched) ? 'was-validated' : ''"-->
+    <h3>Add New {{ entity }}:</h3> <!-- [class]="name.invalid && (name.dirty || name.touched) ? 'was-validated' : ''"-->
     <form class="was-validated" #f="ngForm" (ngSubmit)="onSubmitAdd(f)" novalidate>
       <div class="form-group">
         <label for="">Name</label>
