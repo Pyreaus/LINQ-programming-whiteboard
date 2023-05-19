@@ -79,6 +79,7 @@
 
                                   <!--  SUB COMPONENT OF THE ENTITY (Employee) COMPONENT -->
 
+
 <div *ngIf="mode=='edit'&&!(employee$|async)" class="h-100 pb-5 d-flex align-items-center justify-content-center">
   <strong class="mr-3">Loading...</strong>
   <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
@@ -86,23 +87,23 @@
 
 <ng-template #addView>
   <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='add'">
-    <h3>Add New {{ entity }}:</h3>
-    <form class="needs-validation" (ngSubmit)="onSubmitAdd(f)" #f="ngForm" novalidate>
+    <h3>Add New Employee:</h3> <!-- [class]="name.invalid && (name.dirty || name.touched) ? 'was-validated' : ''"-->
+    <form class="was-validated" #f="ngForm" (ngSubmit)="onSubmitAdd(f)" novalidate>
       <div class="form-group">
         <label for="">Name</label>
-        <input name="name" [(ngModel)]="newEmployee.name" class="form-control" type="text" required>
+        <input #name="ngModel" [(ngModel)]="newEmployee.name" class="form-control" type="text" required maxlength="15">
       </div>
       <div class="form-group">
         <label for="">Email</label>
-        <input name="email" [(ngModel)]="newEmployee.email" class="form-control" type="text" required>
+        <input #email="ngModel" [(ngModel)]="newEmployee.email" class="form-control" type="text" required maxlength="20">
       </div>
       <div class="form-group">
         <label for="">Phone</label>
-        <input name="phone" [(ngModel)]="newEmployee.phone" class="form-control" type="text" required>
+        <input #phone="ngModel" [(ngModel)]="newEmployee.phone" class="form-control" type="text" required maxlength="10">
       </div>
       <div class="form-group">
         <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
-        <button type="submit" class="btn btn-primary" (click)="needsValidation=true">Add Employee</button>
+        <button type="submit" class="btn btn-primary">Add Employee</button>
       </div>
     </form>
     <script>
@@ -126,7 +127,7 @@
 </ng-template>
 <ng-template #editView>
   <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='edit'">
-      <h3>Edit {{ entity }}:</h3>
+      <h3>Edit Employee:</h3>
       <form *ngIf="employee$ | async as emp" (ngSubmit)="onSubmitEdit(f)" #f="ngForm">
           <div class="form-group">
               <label for="">Id</label>
@@ -134,15 +135,15 @@
           </div>
           <div class="form-group">
               <label for="">Name</label>
-              <input name="name" [ngModel]="emp?.name" (ngModelChange)="emp.name =$event" class="form-control" type="text">
+              <input name="name" [ngModel]="emp?.name" (ngModelChange)="emp.name =$event" class="form-control" maxlength="10" type="text">
           </div>
           <div class="form-group">
               <label for="">Email</label>
-              <input name="email" [ngModel]="emp?.email" (ngModelChange)="emp.email =$event" class="form-control" type="text">
+              <input name="email" [ngModel]="emp?.email" (ngModelChange)="emp.email =$event" class="form-control" maxlength="20" type="text">
           </div>
           <div class="form-group">
               <label for="">Phone</label>
-              <input type="text" class="form-control" [ngModel]="emp?.phone" (ngModelChange)="emp.phone =$event" name="phone">
+              <input type="text" class="form-control" [ngModel]="emp?.phone" (ngModelChange)="emp.phone =$event" maxlength="10" name="phone">
           </div>
           <div class="form-group">
               <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
@@ -153,3 +154,4 @@
 </ng-template>
 
 <div *ngIf="mode=='edit'; then editView; else addView;"></div>
+
