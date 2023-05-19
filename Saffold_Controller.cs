@@ -1,7 +1,7 @@
                // [...]  controller class definition up here ^       
 
         // PUT: api/Offer/Edit/5
-        [HttpPut("[controller]/[action]/{id:int}")]
+        [ActionName("Edit"),HttpPut("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {   
             if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
@@ -15,8 +15,7 @@
             return NoContent();
         }
         // GET: api/Offer/GetOffer/5
-        [ActionName("GetOffer")]
-        [HttpGet("[controller]/[action]/{id:int}")]
+        [ActionName("GetOffer"),HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
             if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
@@ -40,7 +39,7 @@
             return Ok(offerVM);
         }
          // DELETE: api/Offer/DeleteOffer/5
-        [HttpDelete("[controller]/[action]/{id:int}")]
+        [ActionName("DeleteOffer"),HttpDelete("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
         {
             if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
