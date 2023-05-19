@@ -1,24 +1,32 @@
                // [...]  controller class definition up here ^       
-
-        // PUT: api/Offer/Edit/5
+               
+        // GET: api/v1/Offer/GetOffers
+        [ActionName("GetOffers"),HttpGet("[controller]/[action]/{token}")]
+        public async Task<IActionResult> GetOffers()
+        {
+            IEnumerable<Offer?> offers = await offerService.GetOffersAsync();
+            //automapper here - convert to view model
+            return offers is not null and IEnumerable<Offer> ? Ok(offers) : StatusCode(204);
+        }       
+        // PUT: api/v1/Offer/Edit/5
         [ActionName("Edit"),HttpPut("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] int id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
         {   
-            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
           
             Offer offerToUpdate = offerService.GetById(id);                                                            
             offerToUpdate.Caption = createUpdateOfferViewModel.Caption;           //
             offerToUpdate.Description = createUpdateOfferViewModel.Description;  //
             offerToUpdate.ImgPath = createUpdateOfferViewModel.ImgPath;         //
-            offerService.Update(offerToUpdate);                                // I should be using AutoMapper here with Ignore() in map configuration 
+            offerService.Update(offerToUpdate);                                // Should be using AutoMapper here with Ignore() in map configuration 
 
             return NoContent();
         }
-        // GET: api/Offer/GetOffer/5
+        // GET: api/v1/Offer/GetOffer/5
         [ActionName("GetOffer"),HttpGet("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
             Offer offer = offerService.GetById(id);
 
             PeopleFinderUser peopleFinderUser = userService.GetById(offer.CreatorId);
@@ -38,11 +46,11 @@
             
             return Ok(offerVM);
         }
-         // DELETE: api/Offer/DeleteOffer/5
+        // DELETE: api/v1/Offer/DeleteOffer/5
         [ActionName("DeleteOffer"),HttpDelete("[controller]/[action]/{id:int}")]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] int id)
         {
-            if (await offerService.GetById(id) is null or not Offer offer) return NotFound(id); 
+            if (await offerService.GetById(id) is null or not Offer offer) return StatusCode(204); 
           
             Offer offerToDelete = offerService.GetById(id);
             offerService.Delete(offerToDelete);
