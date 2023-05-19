@@ -1,7 +1,7 @@
                // [...]  controller class definition up here ^       
                
         // GET: api/v1/Offer/GetOffers/{token}
-        [ActionName("GetOffers"),HttpGet("[controller]/[action]/{token:int}")]
+        [ActionName("GetOffers"),HttpGet("[action]/{token:int}")]
         public async Task<IActionResult> GetOffers([FromRoute] int token)
         {
             IEnumerable<Offer?> offers = await offerService.GetOffersAsync(token);
@@ -9,7 +9,7 @@
             return offers is not null and IEnumerable<Offer> ? Ok(offers) : StatusCode(204);
         }               
         // PUT: api/v1/Offer/Edit/5
-        [ActionName("Edit"),HttpPut("[controller]/[action]/{id:guid}")]
+        [ActionName("Edit"),HttpPut("[action]/{id:guid}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] AddModifyOfferVM addModifyOfferVM)
         {   
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
@@ -23,7 +23,7 @@
             return Ok(200);
         }
         // GET: api/v1/Offer/GetOffer/5
-        [ActionName("GetOffer"),HttpGet("[controller]/[action]/{id:guid}")]
+        [ActionName("GetOffer"),HttpGet("[action]/{id:guid}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] Guid id)
         {
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
@@ -47,7 +47,7 @@
             return Ok(offerVM);
         }
         // DELETE: api/v1/Offer/DeleteOffer/5
-        [ActionName("DeleteOffer"),HttpDelete("[controller]/[action]/{id:guid}")]
+        [ActionName("DeleteOffer"),HttpDelete("[action]/{id:guid}")]
         public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] Guid id)
         {
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
