@@ -1,3 +1,82 @@
+
+<div *ngIf="mode=='edit'&&!(employee$|async)" class="h-100 pb-5 d-flex align-items-center justify-content-center">
+  <strong class="mr-3">Loading...</strong>
+  <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
+</div>
+
+<ng-template #addView>
+  <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='add'">
+    <h3>Add New {{ entity }}:</h3>
+    <form class="needs-validation" (ngSubmit)="onSubmitAdd(f)" #f="ngForm" novalidate>
+      <div class="form-group">
+        <label for="">Name</label>
+        <input name="name" [(ngModel)]="newEmployee.name" class="form-control" type="text" required>
+      </div>
+      <div class="form-group">
+        <label for="">Email</label>
+        <input name="email" [(ngModel)]="newEmployee.email" class="form-control" type="text" required>
+      </div>
+      <div class="form-group">
+        <label for="">Phone</label>
+        <input name="phone" [(ngModel)]="newEmployee.phone" class="form-control" type="text" required>
+      </div>
+      <div class="form-group">
+        <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
+        <button type="submit" class="btn btn-primary" (click)="needsValidation=true">Add Employee</button>
+      </div>
+    </form>
+    <script>
+      (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+          var forms = document.getElementsByClassName('needs-validation');
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+    </script>
+  </div>
+</ng-template>
+<ng-template #editView>
+  <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='edit'">
+      <h3>Edit {{ entity }}:</h3>
+      <form *ngIf="employee$ | async as emp" (ngSubmit)="onSubmitEdit(f)" #f="ngForm">
+          <div class="form-group">
+              <label for="">Id</label>
+              <input name="id" [ngModel]="emp?.id" class="form-control" type="text" readonly>
+          </div>
+          <div class="form-group">
+              <label for="">Name</label>
+              <input name="name" [ngModel]="emp?.name" (ngModelChange)="emp.name =$event" class="form-control" type="text">
+          </div>
+          <div class="form-group">
+              <label for="">Email</label>
+              <input name="email" [ngModel]="emp?.email" (ngModelChange)="emp.email =$event" class="form-control" type="text">
+          </div>
+          <div class="form-group">
+              <label for="">Phone</label>
+              <input type="text" class="form-control" [ngModel]="emp?.phone" (ngModelChange)="emp.phone =$event" name="phone">
+          </div>
+          <div class="form-group">
+              <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
+              <button class="btn btn-success" type="submit">Save Changes</button>
+          </div>
+      </form>
+  </div>
+</ng-template>
+
+<div *ngIf="mode=='edit'; then editView; else addView;"></div>
+
+
+
+
 <ng-container *ngIf="!!entity&&!(employees$|async)?.length; else empTable"></ng-container>
 
 <div *ngIf="!!entity&&!(employees$|async)?.length" class="h-100 pb-5 d-flex align-items-center justify-content-center">
