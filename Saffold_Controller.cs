@@ -1,5 +1,13 @@
                // [...]  controller class definition up here ^       
                
+        // GET: api/v1/Offer/GetOffers/{token}
+        [ActionName("GetOffers"),HttpGet("[controller]/[action]/{token:int}")]
+        public async Task<IActionResult> GetOffers([FromRoute] int token)
+        {
+            IEnumerable<Offer?> offers = await offerService.GetOffersAsync(token);
+            //automapper here - convert to view model
+            return offers is not null and IEnumerable<Offer> ? Ok(offers) : StatusCode(204);
+        }               
         // PUT: api/v1/Offer/Edit/5
         [ActionName("Edit"),HttpPut("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
@@ -14,14 +22,6 @@
 
             return Ok(200);
         }
-       // GET: api/v1/Offer/GetOffers/{token}
-        [ActionName("GetOffers"),HttpGet("[controller]/[action]/{token:int}")]
-        public async Task<IActionResult> GetOffers([FromRoute] int token)
-        {
-            IEnumerable<Offer?> offers = await offerService.GetOffersAsync(token);
-            //automapper here - convert to view model
-            return offers is not null and IEnumerable<Offer> ? Ok(offers) : StatusCode(204);
-        }               
         // GET: api/v1/Offer/GetOffer/5
         [ActionName("GetOffer"),HttpGet("[controller]/[action]/{id:guid}")]
         public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] Guid id)
