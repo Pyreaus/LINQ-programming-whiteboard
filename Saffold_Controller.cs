@@ -18,7 +18,7 @@
             offerToUpdate.Caption = addModifyOfferVM.Caption;           //
             offerToUpdate.Description = addModifyOfferVM.Description;  //
             offerToUpdate.ImgPath = addModifyOfferVM.ImgPath;         //
-            offerService.Update(offerToUpdate);                                // Should be using AutoMapper here with Ignore() in map configuration 
+            offerService.Update(offerToUpdate);                      // Should be using AutoMapper here with Ignore() in map configuration 
 
             return Ok(200);
         }
