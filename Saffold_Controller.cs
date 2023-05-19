@@ -10,14 +10,14 @@
         }               
         // PUT: api/v1/Offer/Edit/5
         [ActionName("Edit"),HttpPut("[controller]/[action]/{id:guid}")]
-        public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] CreateUpdateOfferViewModel createUpdateOfferViewModel)
+        public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] AddModifyOfferVM addModifyOfferVM)
         {   
             if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
           
             Offer offerToUpdate = offerService.GetById(id);                                                            
-            offerToUpdate.Caption = createUpdateOfferViewModel.Caption;           //
-            offerToUpdate.Description = createUpdateOfferViewModel.Description;  //
-            offerToUpdate.ImgPath = createUpdateOfferViewModel.ImgPath;         //
+            offerToUpdate.Caption = addModifyOfferVM.Caption;           //
+            offerToUpdate.Description = addModifyOfferVM.Description;  //
+            offerToUpdate.ImgPath = addModifyOfferVM.ImgPath;         //
             offerService.Update(offerToUpdate);                                // Should be using AutoMapper here with Ignore() in map configuration 
 
             return Ok(200);
