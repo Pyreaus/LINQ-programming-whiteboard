@@ -17,9 +17,9 @@ export class EmployeeAddEditComponent implements OnInit {
   mode!: string | number;
   submitted!: boolean;
   employee$!: Observable<Employee>;
-  newEmployee: AddModifyEmpReq = { name: '', email: '', phone: '' };
   DepList: string[] = [];
   UnfilteredDepList: string[] = [];
+  newEmployee: AddModifyEmpReq = { name: '', email: '', phone: '' };
   employeeForm: FormGroup  = this.fb.group({
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
     phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
