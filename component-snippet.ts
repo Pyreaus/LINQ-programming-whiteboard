@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
-import { NgForm } from '@angular/forms';
+import { NgForms, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { Employee } from 'src/app/Interfaces/employee';
 import { AddModifyEmpReq } from 'src/app/Interfaces/DTOs/AddModifyEmpReq';
 import { EmployeeService } from 'src/app/Services/EmployeeService/employee.service';
