@@ -33,8 +33,8 @@ public class EmployeeController : ControllerBase
     /// <response code="201">employee object</response>
     /// <response code="400">not created</response>
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ActionName("AddEmployee"),HttpPost("[action]")]
     public IActionResult AddEmployee([FromBody] AddModifyEmpReq employeeReq)
     {
