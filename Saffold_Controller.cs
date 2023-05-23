@@ -32,8 +32,8 @@ public class EmployeeController : ControllerBase
     /// <param name="employeeReq">AddModifyEmpReq DTO</param>
     /// <response code="201">employee object</response>
     /// <response code="400">not created</response>
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
     [ActionName("AddEmployee"),HttpPost("[action]")]
     public ActionResult<EmployeeViewModel> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
