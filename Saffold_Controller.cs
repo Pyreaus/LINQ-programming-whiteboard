@@ -1,66 +1,100 @@
-               // [...]  controller class definition up here ^       
-               
-        // GET: api/v1/Offer/GetOffers/{token}
-        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
-        [ActionName("GetOffers"),HttpGet("[action]/{token:int}")]
-        public async Task<IActionResult> GetOffers([FromRoute] int token)
-        {
-            IEnumerable<Offer?> offers = await offerService.GetOffersAsync(token);
-            //automapper here - convert to view model
-            return offers is not null and IEnumerable<Offer> ? Ok(offers) : StatusCode(204);
-        }               
-        // PUT: api/v1/Offer/Edit/5
-        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
-        [ActionName("Edit"),HttpPut("[action]/{id:guid}")]
-        public async Task<IActionResult<int?>> Edit([FromRoute] Guid id, [FromBody] AddModifyOfferVM addModifyOfferVM)
-        {   
-            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
-          
-            Offer offerToUpdate = offerService.GetById(id);                                                            
-            offerToUpdate.Caption = addModifyOfferVM.Caption;           //
-            offerToUpdate.Description = addModifyOfferVM.Description;  //
-            offerToUpdate.ImgPath = addModifyOfferVM.ImgPath;         //
-            offerService.Update(offerToUpdate);                      // Should be using AutoMapper here with Ignore() in map configuration 
+[Produces("application/json")]
+[Route("api/v1/[controller]")]
+[ApiController]
+public class EmployeeController : ControllerBase
+{
+    private readonly ILogger<EmployeeController> _logger;
+    private readonly IEmployeeService _employeeService;
+    public readonly IMapper _mapper;
+    public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
+    {
+       (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
+    }
 
-            return Ok(200);
-        }
-        // GET: api/v1/Offer/GetOffer/5
-        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
-        [ActionName("GetOffer"),HttpGet("[action]/{id:guid}")]
-        public async Task<IActionResult<int?, OfferViewModel?>> GetOffer([FromRoute] Guid id)
-        {
-            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
-            Offer offer = offerService.GetById(id);
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployees
+    /// </summary>
+    /// <response code="200">employee object list</response>
+    /// <response code="404">missing employee objects</response>
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
+    [ActionName("GetEmployees"),HttpGet("[action]")]
+    public async Task<IActionResult> GetEmployees()
+    {
+        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
+        IEnumerable<EmployeeViewModel>  employeesVM = _mapper.Map<IEnumerable<Employee?>,IEnumerable<EmployeeViewModel>>(employees!);
+        return employees is not null and IEnumerable<Employee> ? Ok(employeesVM) : StatusCode(404);
+    }
 
-            PeopleFinderUser peopleFinderUser = userService.GetById(offer.CreatorId);
-            OfferViewModel offerVM = new OfferViewModel
-            {
-                Id = offer.Id,
-                ImgPath = offer.ImgPath,
-                Caption = offer.Caption,
-                Description = offer.Description,
-                Timestamped = offer.Timestamped,
-                Email = peopleFinderUser.Email,
-                Telephone = peopleFinderUser.Telephone,
-                FirstName = peopleFinderUser.FirstName,
-                LastName = peopleFinderUser.LastName,
-                Photo = bnetUrl + peopleFinderUser.Photo
-            };
-            
-            return Ok(offerVM);
-        }
-        // DELETE: api/v1/Offer/DeleteOffer/5
-        [ProducesResponseType(StatusCodes.Status200OK),ProducesDefaultResponseType]
-        [ActionName("DeleteOffer"),HttpDelete("[action]/{id:guid}")]
-        public async Task<IActionResult<Offer?,int?>> DeleteOffer([FromRoute] Guid id)
-        {
-            if (await offerService.GetById(id) is null or not Offer _) return StatusCode(204); 
-          
-            Offer offerToDelete = offerService.GetById(id);
-            offerService.Delete(offerToDelete);
-            
-            return Ok(200);
-        }
+    /// <summary>
+    /// POST: api/{version}/Employee/AddEmployee
+    /// </summary>
+    /// <param name="employeeReq">AddModifyEmpReq DTO</param>
+    /// <response code="201">employee object</response>
+    /// <response code="400">not created</response>
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
+    [ActionName("AddEmployee"),HttpPost("[action]")]
+    public IActionResult AddEmployee([FromBody] AddModifyEmpReq employeeReq)
+    {
+        if (employeeReq is null) return BadRequest(employeeReq);
+        Employee createdEmployee = _employeeService.CreateEmployee(_mapper.Map<AddModifyEmpReq,Employee>(employeeReq));
+        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(createdEmployee);
+        return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
+    }
 
+    /// <summary>
+    /// PUT: api/{version}/Employee/EditEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <response code="200">employee object</returns>
+    /// <response code="204">invlaid id</returns>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
+    [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
+    public async Task<IActionResult> EditEmployee([FromRoute] Guid id, [FromBody] AddModifyEmpReq modifyRequest)
+    {
+        Employee? empEntry = await _employeeService.GetEmployeeByIdAsync(id);
+        if (empEntry is null || modifyRequest is null) return StatusCode(204);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(empEntry!);
+        _mapper.Map(modifyRequest, empEntry);
+        this._employeeService.UpdateEmployee(empEntry);
+        return Ok(employeeVM);
+    }
 
-//TODO: create Upload() controller for file uploads
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <response code="200">employee object</returns>
+    /// <response code="204">invlaid id</returns>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
+    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
+    public async Task<IActionResult> GetEmployee([FromRoute] Guid id)
+    {
+        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(employee!);
+        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
+    }
+
+    /// <summary>
+    /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <response code="204">invlaid id</returns>
+    /// <response code="200">deleted successfully</returns>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ActionName("DeleteEmployee"),HttpDelete("[action]/{id:guid}")]
+    public async Task<IActionResult> DeleteEmployee([FromRoute] Guid id)
+    {
+        if (await _employeeService.GetEmployeeByIdAsync(id) is null) return StatusCode(204);
+        Employee? empToDelete = await _employeeService.GetEmployeeByIdAsync(id);
+        _employeeService.DeleteEmployee(empToDelete!);
+        return Ok(200);
+    }
+
+    //[..]
+}
