@@ -30,8 +30,8 @@ public class EmployeeController : ControllerBase
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
-    /// <response code="200">employee object</returns>
-    /// <response code="204">invlaid id</returns>
+    /// <response code="200">employee object</response>
+    /// <response code="204">invlaid id</response>
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
@@ -67,8 +67,8 @@ public class EmployeeController : ControllerBase
     /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
-    /// <response code="204">invlaid id</returns>
-    /// <response code="200">deleted successfully</returns>
+    /// <response code="204">invlaid id</response>
+    /// <response code="200">deleted successfully</response>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ActionName("DeleteEmployee"),HttpDelete("[action]/{id:guid}")]
@@ -84,8 +84,8 @@ public class EmployeeController : ControllerBase
     /// GET: api/{version}/Employee/GetEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
-    /// <response code="200">employee object</returns>
-    /// <response code="204">invlaid id</returns>
+    /// <response code="200">employee object</response>
+    /// <response code="204">invlaid id</response>
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
