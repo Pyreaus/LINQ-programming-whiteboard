@@ -22,7 +22,7 @@ public class EmployeeController : ControllerBase
     public async Task<ActionResult<IEnumerable<EmployeeViewModel>>> GetEmployees()
     {
         IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
-        IEnumerable<EmployeeViewModel>  employeesVM = _mapper.Map<IEnumerable<Employee?>,IEnumerable<EmployeeViewModel>>(employees!);
+        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>,IEnumerable<EmployeeViewModel>>(employees!);
         return employees is not null and IEnumerable<Employee> ? Ok(employeesVM) : StatusCode(404);
     }
 
