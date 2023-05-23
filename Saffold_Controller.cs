@@ -25,25 +25,7 @@ public class EmployeeController : ControllerBase
         IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>,IEnumerable<EmployeeViewModel>>(employees!);
         return employees is not null and IEnumerable<Employee> ? Ok(employeesVM) : StatusCode(404);
     }
-
-    /// <summary>
-    /// POST: api/{version}/Employee/AddEmployee
-    /// </summary>
-    /// <param name="employeeReq">AddModifyEmpReq DTO</param>
-    /// <response code="201">employee object</response>
-    /// <response code="400">not created</response>
-    [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
-    [ActionName("AddEmployee"),HttpPost("[action]")]
-    public ActionResult<EmployeeViewModel> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
-    {
-        if (employeeReq is null) return BadRequest(employeeReq);
-        Employee createdEmployee = _employeeService.CreateEmployee(_mapper.Map<AddModifyEmpReq,Employee>(employeeReq));
-        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(createdEmployee);
-        return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
-    }
-
+    
     /// <summary>
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
@@ -61,6 +43,24 @@ public class EmployeeController : ControllerBase
         _mapper.Map(modifyReq, empEntry);
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
+    }
+
+    /// <summary>
+    /// POST: api/{version}/Employee/AddEmployee
+    /// </summary>
+    /// <param name="employeeReq">AddModifyEmpReq DTO</param>
+    /// <response code="201">employee object</response>
+    /// <response code="400">not created</response>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
+    [ActionName("AddEmployee"),HttpPost("[action]")]
+    public ActionResult<EmployeeViewModel> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
+    {
+        if (employeeReq is null) return BadRequest(employeeReq);
+        Employee createdEmployee = _employeeService.CreateEmployee(_mapper.Map<AddModifyEmpReq,Employee>(employeeReq));
+        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(createdEmployee);
+        return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
     }
 
     /// <summary>
