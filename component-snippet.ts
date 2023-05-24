@@ -1,4 +1,4 @@
-// component imports
+//component imports
 
 @Component({
   selector: 'app-employee-add-edit',
@@ -13,12 +13,13 @@ export class EmployeeAddEditComponent implements OnInit {
   DepList: string[] = [];
   UnfilteredDepList: string[] = [];
   newEmployee: AddModifyEmpReq = { name:'', email:'', phone:'' };
-  employeeForm: FormGroup  = this.fb.group({
+  editEmployeeForm: FormGroup  = this.fb.group({
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
     phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
-    email: [null, [Validators.required, Validators.email]]
+    email: [null, [Validators.required, Validators.email]],
+    id: [{ value:'', disabled:true },Validators.required]
   });
-  editEmployeeForm: FormGroup  = this.fb.group({
+  employeeForm: FormGroup  = this.fb.group({
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
     phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
     email: [null, [Validators.required, Validators.email]]
@@ -43,14 +44,10 @@ export class EmployeeAddEditComponent implements OnInit {
         this.newEmployee.phone = this.employeeForm.get('phone')!.value;
         this.employeeService.AddEmployee(this.newEmployee).subscribe(res => console.info(res));
         this.router.navigateByUrl('/employees');
-    } else {
-      console.warn('Form Invalid');
-    }
+    } else console.warn('Form Invalid');
   }
-  onSubmitEdit(form: NgForm): void {
-    console.warn(form.value);
-    // this.employeeService.EditEmployee(form.value.id, form.value).subscribe(res => console.info(res));
-    // this.router.navigateByUrl('/employeess');
+  onSubmitEdit(): void {
+    this.employeeService.EditEmployee(this.editEmployeeForm.getRawValue().id,this.editEmployeeForm.value).subscribe(res => console.info(res));
+    this.router.navigateByUrl('/employees');
   }
-
 }
