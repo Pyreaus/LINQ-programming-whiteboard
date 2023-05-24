@@ -6,7 +6,7 @@
 </div>
 
 <ng-template #editView>
-  <div style="max-width:600px;" *ngIf="employee$ | async as emp" [hidden]="mode!='edit'" class="container mt-4" >
+  <div style="max-width:600px;" *ngIf="employee$|async as emp" [hidden]="mode!='edit'" class="container mt-4" >
     <h3>Edit {{ entity }}:</h3>
     <form class="form" [formGroup]="editEmployeeForm" (ngSubmit)="onSubmitEdit()" #f="ngForm">
       <div class="form-group">
