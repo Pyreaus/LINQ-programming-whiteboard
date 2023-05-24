@@ -1,10 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgForm, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
-import { Employee } from 'src/app/Interfaces/employee';
-import { AddModifyEmpReq } from 'src/app/Interfaces/DTOs/AddModifyEmpReq';
-import { EmployeeService } from 'src/app/Services/EmployeeService/employee.service';
-import { Observable, Subscribable } from 'rxjs';
+// component imports
 
 @Component({
   selector: 'app-employee-add-edit',
