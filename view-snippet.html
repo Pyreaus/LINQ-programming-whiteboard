@@ -11,7 +11,7 @@
     <form class="form" [formGroup]="editEmployeeForm" (ngSubmit)="onSubmitEdit()" #f="ngForm">
       <div class="form-group">
         <label class="label" for="#">Id</label>
-        <input formControlName='id' [(ngModel)]="emp.id" [readonly]="editEmployeeForm.get('id')?.disabled" class="form-control" type="text" />
+        <input type="text" formControlName='id' [(ngModel)]="emp.id" [readonly]="editEmployeeForm.get('id')?.disabled" class="form-control" />
       </div>
       <div class="form-group">
         <label class="label" for="#">Full Name</label>
