@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgForms, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
+import { NgForm, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { Employee } from 'src/app/Interfaces/employee';
 import { AddModifyEmpReq } from 'src/app/Interfaces/DTOs/AddModifyEmpReq';
 import { EmployeeService } from 'src/app/Services/EmployeeService/employee.service';
@@ -18,18 +18,19 @@ export class EmployeeAddEditComponent implements OnInit {
   employee$!: Observable<Employee>;
   DepList: string[] = [];
   UnfilteredDepList: string[] = [];
-  newEmployee: AddModifyEmpReq = { name: '', email: '', phone: '' };
+  newEmployee: AddModifyEmpReq = { name:'', email:'', phone:'' };
   employeeForm: FormGroup  = this.fb.group({
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
     phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
     email: [null, [Validators.required, Validators.email]]
   });
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
-    private employeeService: EmployeeService) {}
-
+  editEmployeeForm: FormGroup  = this.fb.group({
+    name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
+    phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
+    email: [null, [Validators.required, Validators.email]]
+  });
+  constructor(private fb:FormBuilder,private router:Router,private route:ActivatedRoute,private employeeService:EmployeeService)
+  { }
   ngOnInit(): void {
     this.submitted = false;
     this.id = this.route.snapshot.paramMap.get('id') ?? '0';
@@ -53,8 +54,9 @@ export class EmployeeAddEditComponent implements OnInit {
     }
   }
   onSubmitEdit(form: NgForm): void {
-    console.log(form);
-    this.router.navigateByUrl('');
+    console.warn(form.value);
+    // this.employeeService.EditEmployee(form.value.id, form.value).subscribe(res => console.info(res));
+    // this.router.navigateByUrl('/employeess');
   }
 
 }
