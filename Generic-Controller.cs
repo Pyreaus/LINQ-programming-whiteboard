@@ -10,7 +10,7 @@ public class EmployeeController : ControllerBase
     {
        (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
     }
-
+    #region endpoints
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
@@ -97,4 +97,5 @@ public class EmployeeController : ControllerBase
     }
 
     //[..]
+    #endregion
 }
