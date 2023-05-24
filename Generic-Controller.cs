@@ -3,16 +3,14 @@
 [ApiController]
 public class EmployeeController : ControllerBase
 {
-    #region dependancies
     private readonly ILogger<EmployeeController> _logger;
     private readonly IEmployeeService _employeeService;
     public readonly IMapper _mapper;
     public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
     {
        (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
-    }
-    #endregion
-    
+    } 
+  
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
