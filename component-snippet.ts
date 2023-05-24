@@ -48,6 +48,6 @@ export class EmployeeAddEditComponent implements OnInit {
   }
   onSubmitEdit(): void {
     this.employeeService.EditEmployee(this.editEmployeeForm.getRawValue().id,this.editEmployeeForm.value).subscribe(res => console.info(res));
-    this.router.navigateByUrl('/employees');
+    // this.router.navigateByUrl('/employees');
   }
 }
