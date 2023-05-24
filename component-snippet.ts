@@ -14,10 +14,10 @@ export class EmployeeAddEditComponent implements OnInit {
   UnfilteredDepList: string[] = [];
   newEmployee: AddModifyEmpReq = { name:'', email:'', phone:'' };
   editEmployeeForm: FormGroup  = this.fb.group({
+    id: [{ value:'', disabled:true },Validators.required],
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
     phone: [null, [Validators.required, Validators.pattern(/^[- +()0-9]{10,15}$/)]],
-    email: [null, [Validators.required, Validators.email]],
-    id: [{ value:'', disabled:true },Validators.required]
+    email: [null, [Validators.required, Validators.email]]
   });
   employeeForm: FormGroup  = this.fb.group({
     name: [null, [Validators.required, Validators.pattern(/^[a-zA-Z]{1,15}\s[a-zA-Z]{1,15}$/)]],
