@@ -15,21 +15,21 @@
       </div>
       <div class="form-group">
         <label class="label" for="#">Full Name</label>
-        <input formControlName='name' class="form-control" [(ngModel)]="emp.name" type="text"
+        <input type="text" formControlName='name' class="form-control" [(ngModel)]="emp.name"
           [class.is-invalid]="editEmployeeForm.get('name')?.invalid&&(submitted||(editEmployeeForm.get('name')?.touched||editEmployeeForm.get('name')?.dirty))" required />
         <span *ngIf="editEmployeeForm.get('name')?.errors?.['required']" class="invalid-feedback">Name is required</span>
         <span *ngIf="editEmployeeForm.get('name')?.touched&&editEmployeeForm.get('name')?.errors?.['pattern']" class="invalid-feedback">That doesn't look right!</span>
       </div>
       <div class="form-group">
         <label class="label" for="#">Email</label>
-        <input formControlName="email" class="form-control" [(ngModel)]="emp.email" type="text"
+        <input type="text" formControlName="email" class="form-control" [(ngModel)]="emp.email"
           [class.is-invalid]="editEmployeeForm.get('email')?.invalid&&(submitted||(editEmployeeForm.get('email')?.touched||editEmployeeForm.get('email')?.dirty))" required />
         <span *ngIf="editEmployeeForm.get('email')?.errors?.['required']" class="invalid-feedback">Email is required</span>
         <span *ngIf="editEmployeeForm.get('email')?.touched&&editEmployeeForm.get('email')?.errors?.['email']" class="invalid-feedback">That doesn't look right!</span>
       </div>
       <div class="form-group">
         <label class="label" for="#">Phone</label>
-        <input formControlName="phone" class="form-control" [(ngModel)]="emp.phone" type="text"
+        <input type="text" formControlName="phone" class="form-control" [(ngModel)]="emp.phone"
           [class.is-invalid]="editEmployeeForm.get('phone')?.invalid&&(submitted||(editEmployeeForm.get('phone')?.touched||editEmployeeForm.get('phone')?.dirty))" required />
         <span *ngIf="editEmployeeForm.get('phone')?.errors?.['required']" class="invalid-feedback">Phone is required</span>
         <span *ngIf="editEmployeeForm.get('phone')?.touched&&editEmployeeForm.get('phone')?.errors?.['pattern']" class="invalid-feedback">Phone must be a valid phone number</span>
