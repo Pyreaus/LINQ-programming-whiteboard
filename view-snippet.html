@@ -5,6 +5,43 @@
   <div class="spinner-border text-dark mb-1" role="status" aria-hidden="true"></div>
 </div>
 
+<ng-template #editView>
+  <div *ngIf="employee$ | async as emp" [hidden]="mode!='edit'" class="container mt-4" style="max-width:600px;" >
+    <h3>Edit {{ entity }}:</h3>
+    <form class="form" [formGroup]="editEmployeeForm" (ngSubmit)="onSubmitEdit()" #f="ngForm">
+      <div class="form-group">
+        <label class="label" for="#">Id</label>
+        <input formControlName='id' [(ngModel)]="emp.id" [readonly]="editEmployeeForm.get('id')?.disabled" type="text" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label class="label" for="#">Full Name</label>
+        <input formControlName='name' class="form-control" [(ngModel)]="emp.name" type="text"
+          [class.is-invalid]="editEmployeeForm.get('name')?.invalid&&(submitted||(editEmployeeForm.get('name')?.touched||editEmployeeForm.get('name')?.dirty))" required />
+        <span *ngIf="editEmployeeForm.get('name')?.errors?.['required']" class="invalid-feedback">Name is required</span>
+        <span *ngIf="editEmployeeForm.get('name')?.touched&&editEmployeeForm.get('name')?.errors?.['pattern']" class="invalid-feedback">That doesn't look right!</span>
+      </div>
+      <div class="form-group">
+        <label class="label" for="#">Email</label>
+        <input formControlName="email" class="form-control" [(ngModel)]="emp.email" type="text"
+          [class.is-invalid]="editEmployeeForm.get('email')?.invalid&&(submitted||(editEmployeeForm.get('email')?.touched||editEmployeeForm.get('email')?.dirty))" required />
+        <span *ngIf="editEmployeeForm.get('email')?.errors?.['required']" class="invalid-feedback">Email is required</span>
+        <span *ngIf="editEmployeeForm.get('email')?.touched&&editEmployeeForm.get('email')?.errors?.['email']" class="invalid-feedback">That doesn't look right!</span>
+      </div>
+      <div class="form-group">
+        <label class="label" for="#">Phone</label>
+        <input formControlName="phone" class="form-control" [(ngModel)]="emp.phone" type="text"
+          [class.is-invalid]="editEmployeeForm.get('phone')?.invalid&&(submitted||(editEmployeeForm.get('phone')?.touched||editEmployeeForm.get('phone')?.dirty))" required />
+        <span *ngIf="editEmployeeForm.get('phone')?.errors?.['required']" class="invalid-feedback">Phone is required</span>
+        <span *ngIf="editEmployeeForm.get('phone')?.touched&&editEmployeeForm.get('phone')?.errors?.['pattern']" class="invalid-feedback">Phone must be a valid phone number</span>
+      </div>
+      <div>
+        <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
+        <button type="submit" (click)="submitted=true;" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
 <ng-template #addView>
   <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='add'">
     <h3>Add New {{ entity }}:</h3>
@@ -35,34 +72,6 @@
         <button type="submit" (click)="submitted=true;" class="btn btn-success">Add Employee</button>
       </div>
     </form>
-  </div>
-</ng-template>
-
-<ng-template #editView>
-  <div style="max-width:600px;" class="container mt-4" [hidden]="mode!='edit'">
-      <h3>Edit Employee:</h3>
-      <form *ngIf="employee$ | async as emp" (ngSubmit)="onSubmitEdit(f)" #f="ngForm">
-          <div class="form-group">
-              <label for="">Id</label>
-              <input name="id" [ngModel]="emp?.id" class="form-control" type="text" readonly />
-          </div>
-          <div class="form-group">
-              <label for="">Name</label>
-              <input name="name" [ngModel]="emp?.name" (ngModelChange)="emp.name =$event" class="form-control" maxlength="10" type="text" />
-          </div>
-          <div class="form-group">
-              <label for="">Email</label>
-              <input name="email" [ngModel]="emp?.email" (ngModelChange)="emp.email =$event" class="form-control" maxlength="20" type="text" />
-          </div>
-          <div class="form-group">
-              <label for="">Phone</label>
-              <input type="text" class="form-control" [ngModel]="emp?.phone" (ngModelChange)="emp.phone =$event" maxlength="10" name="phone" />
-          </div>
-          <div class="form-group">
-              <a class="btn btn-secondary mr-1" [routerLink]="['/employees']" href="javascript:void(0);">Cancel</a>
-              <button class="btn btn-success" type="submit">Save Changes</button>
-          </div>
-      </form>
   </div>
 </ng-template>
 
