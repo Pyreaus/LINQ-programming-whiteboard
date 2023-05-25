@@ -10,15 +10,15 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
     public interface IRepository<T> where T : class
     {
         IQueryable<IGrouping<int, T>> GroupBy(Expression<Func<T, int>> keySelector);
+        
         /// <summary>
-        /// Asynchronously gets all entities of type T filtered by predicate
+        /// Gets all entities of type T filtered by predicate
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition</param>
         /// <param name="include">A function to include navigation properties</param>
         /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
         /// <remarks>All entities of type T filtered by predicate</remarks>
-        Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null
-            bool disableTracking = true);
+        IEnumerable<T> GetMany(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool disableTracking = true);
         
         /// <summary>
         /// Gets all entities of type T as a Queryable object
@@ -76,6 +76,16 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="id">Identifier of the entity</param>
         /// <returns>The entity matching the identifier</returns>
         T GetById(int id);
+        
+        /// <summary>
+        /// Asynchronously gets all entities of type T filtered by predicate
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition</param>
+        /// <param name="include">A function to include navigation properties</param>
+        /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
+        /// <remarks>All entities of type T filtered by predicate</remarks>
+        Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null
+            bool disableTracking = true);
 
         /// <summary>
         /// Gets the first entity (or default if not found) using delegate
@@ -111,15 +121,5 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
         /// <returns>All entities of type T</returns>
         Task<IEnumerable<T>> GetAllAsync(bool disableTracking = true);
-
-        /// <summary>
-        /// Gets all entities of type T filtered by predicate
-        /// </summary>
-        /// <param name="predicate">A function to test each element for a condition</param>
-        /// <param name="include">A function to include navigation properties</param>
-        /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
-        /// <remarks>All entities of type T filtered by predicate</remarks>
-        IEnumerable<T> GetMany(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            bool disableTracking = true);
     }
 }
