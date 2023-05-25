@@ -27,6 +27,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <returns>All entities of type T as a Queryable object</returns>
         IQueryable<T> GetAllAsQueryable(Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool disableTracking = true);
         
+        
          /// <summary>
         /// Gets a single (or default if not found) entity using delegate filtered by predicate
         /// </summary>
@@ -42,6 +43,16 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="predicate">A function to test each element for a condition</param>
         /// <returns>True if any entity exists that satisfies the conditions, otherwise false</returns>
         bool Any(Expression<Func<T, bool>> predicate);
+        
+        /// <summary>
+        /// Gets all entities of type T filtered by predicate as a Queryable object
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition</param>
+        /// <param name="include">A function to include navigation properties</param>
+        /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
+        /// <remarks>All entities of type T filtered by predicate as a Queryable object</remarks>
+        IQueryable<T> GetManyAsQueryable(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            bool disableTracking = true);
 
         /// <summary>
         /// Gets a single entity using delegate filtered by predicate
@@ -50,7 +61,8 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="include">A function to include navigation properties</param>
         /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
         /// <returns>A single entity using delegate filtered by predicate</returns>
-        T Single(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool disableTracking = true);
+        T Single(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            bool disableTracking = true);
 
         /// <summary>
         /// Deletes all entities that satisfy the conditions
@@ -108,16 +120,6 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
         /// <remarks>All entities of type T filtered by predicate</remarks>
         IEnumerable<T> GetMany(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            bool disableTracking = true);
-
-        /// <summary>
-        /// Gets all entities of type T filtered by predicate as a Queryable object
-        /// </summary>
-        /// <param name="predicate">A function to test each element for a condition</param>
-        /// <param name="include">A function to include navigation properties</param>
-        /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
-        /// <remarks>All entities of type T filtered by predicate as a Queryable object</remarks>
-        IQueryable<T> GetManyAsQueryable(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool disableTracking = true);
     }
 }
