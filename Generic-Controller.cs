@@ -1,4 +1,4 @@
-[ApiController]
+[ApiController]                      //overriding default controller policy
 [Authorize(Policy="user-policy",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
 [Produces("MediaTypeNames.Application.Json")] 
 [Route("api/v1/[controller]")]
