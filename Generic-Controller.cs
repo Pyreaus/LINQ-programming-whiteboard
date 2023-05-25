@@ -1,7 +1,7 @@
-[Route("api/v1/[controller]")]
 [Produces("MediaTypeNames.Application.Json")]
 [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 [ApiController]
+[Route("api/v1/[controller]")]
 public class EmployeeController : ControllerBase
 {
     private readonly ILogger<EmployeeController> _logger;
