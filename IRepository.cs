@@ -10,6 +10,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
     public interface IRepository<T> where T : class
     {
         IQueryable<IGrouping<int, T>> GroupBy(Expression<Func<T, int>> keySelector);
+        
         /// <summary>
         /// Gets all entities of type T as a Queryable object
         /// </summary>
