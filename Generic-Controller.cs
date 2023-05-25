@@ -63,6 +63,22 @@ public class EmployeeController : ControllerBase
         EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(createdEmployee);
         return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
     }
+    
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <response code="200">employee object</response>
+    /// <response code="204">invlaid id</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
+    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
+    public async Task<ActionResult<EmployeeViewModel>> GetEmployee([FromRoute] Guid id)
+    {
+        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(employee!);
+        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
+    }
 
     /// <summary>
     /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
@@ -79,22 +95,6 @@ public class EmployeeController : ControllerBase
         Employee? empToDelete = await _employeeService.GetEmployeeByIdAsync(id);
         _employeeService.DeleteEmployee(empToDelete!);
         return Ok(200);
-    }
-
-    /// <summary>
-    /// GET: api/{version}/Employee/GetEmployee/{id}
-    /// </summary>
-    /// <param name="id">Guid of employee</param>
-    /// <response code="200">employee object</response>
-    /// <response code="204">invlaid id</response>
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
-    public async Task<ActionResult<EmployeeViewModel>> GetEmployee([FromRoute] Guid id)
-    {
-        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
-        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(employee!);
-        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
     }
 
     //[..]
