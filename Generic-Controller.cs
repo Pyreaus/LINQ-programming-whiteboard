@@ -1,5 +1,5 @@
-[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 [ApiController]
+[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 [Produces("MediaTypeNames.Application.Json")]
 [Route("api/v1/[controller]")]
 public class EmployeeController : ControllerBase
