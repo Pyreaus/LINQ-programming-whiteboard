@@ -18,8 +18,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
         /// <param name="include">A function to include navigation properties</param>
         /// <param name="disableTracking">True to disable changing tracking, otherwise false. Default is true</param>
         /// <remarks>All entities of type T filtered by predicate</remarks>
-        Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            bool disableTracking = true);
+        Task<IEnumerable<T>> GetManyAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, bool disableTracking = true);
         
         /// <summary>
         /// Gets all entities of type T as a Queryable object
