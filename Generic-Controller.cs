@@ -1,5 +1,6 @@
-[ApiController]                      //overriding default controller policy
+[ApiController]                      //overriding default controller policy & auth-scheme
 [Authorize(Policy="user-policy",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces("MediaTypeNames.Application.Json")] 
 [Route("api/v1/[controller]")]
 public class EmployeeController : ControllerBase
