@@ -13,7 +13,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		protected RepositoryBase(ILogger<RepositoryBase<TE, TR>> logger, IDbFactory<TR> dbFactory) 
 		{
 			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-			(_logger, _dbSet) = (logger, InitContext.Set<TE>())
+			(_logger, _dbSet) = (logger, InitContext.Set<TE>());
 		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE,object>>? include=null,
