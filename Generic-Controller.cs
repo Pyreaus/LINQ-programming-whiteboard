@@ -35,6 +35,7 @@ public class EmployeeController : ControllerBase
     /// <param name="id">Guid of employee</param>
     /// <response code="200">employee object</response>
     /// <response code="204">invlaid id</response>
+    [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
