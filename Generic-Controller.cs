@@ -18,6 +18,7 @@ public class EmployeeController : ControllerBase
     /// </summary>
     /// <response code="200">employee object list</response>
     /// <response code="404">missing employee objects</response>
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
     [ActionName("GetEmployees"),HttpGet("[action]")]
