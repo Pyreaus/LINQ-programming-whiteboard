@@ -3,16 +3,17 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 	public abstract class RepositoryBase<TE, TR> where TE : class where TR : DbContext
 	{
 		#region infrastructure 
-		private TR _localContext;	         //fields 
+		private TR? _localContext;	         //fields 
 		private readonly DbSet<TE> _dbSet;
+		private readonly ILogger<RepositoryBase<TE, TR>> _logger;
 
 		private IDbFactory<TR> DbFactory { get; }                     //props
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
 		#endregion  
-		protected RepositoryBase(IDbFactory<TR> dbFactory) 
+		protected RepositoryBase(ILogger<RepositoryBase<TE, TR>> logger, IDbFactory<TR> dbFactory) 
 		{
 			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-			_dbSet = InitContext.Set<TE>(); 
+			(_logger, _dbSet) = (logger, InitContext.Set<TE>())
 		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
@@ -29,7 +30,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
          	         if (disableTracking) query = query.AsNoTracking();
          		 return include != null ? include(query) : query;
      		}
-		public virtual async Task<IEnumerable<TE>> GetAllAsync(bool disableTracking = true)
+		public virtual async Task<IEnumerable<TE?>> GetAllAsync(bool disableTracking = true)
        		{
           		 return disableTracking ? await _dbSet.AsNoTracking().ToListAsync() : await _dbSet.ToListAsync();
         	}
