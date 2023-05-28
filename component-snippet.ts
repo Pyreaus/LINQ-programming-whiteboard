@@ -1,10 +1,30 @@
-//component imports
-
+enum UserType {Trainee='Trainee',Reviewer='Reviewer',Admin='Admin',Unauthorized='Unauthorized'}
 @Component({
-  selector: 'app-employee-add-edit',
-  templateUrl: './employee-add-edit.component.html',
-  styles: []
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
 })
+export class HOMEComponent implements OnInit {
+  @ViewChild('sc') sc!: Scroller;
+  userType$: BehaviorSubject<UserType>;
+  user!: Observable<any>;
+  date!: Date[];
+  items: string[][] = []; // TODO: populate with user data
+  visible = true;
+  constructor() { this.userType$ = new BehaviorSubject<UserType>(UserType.Unauthorized) }
+
+    ngOnInit(): void {
+      this.items = Array.from({ length: 1000 }).map((_, i) =>
+      Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
+      setTimeout(() => {
+        this.userType$.next(UserType.Admin);
+      }, 1000);
+    }
+    reset(): void {
+        this.sc.scrollToIndex(0, 'smooth');
+    }
+}
+//Employee sub-component ts file
 export class EmployeeAddEditComponent implements OnInit {
   id!: string | number;
   mode!: string | number;
