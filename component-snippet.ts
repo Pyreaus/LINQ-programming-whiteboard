@@ -24,7 +24,7 @@ export class HOMEComponent implements OnInit {
         this.sc.scrollToIndex(0, 'smooth');
     }
 }
-//Employee sub-component ts file
+                //   *** Employee sub-component ts file **
 export class EmployeeAddEditComponent implements OnInit {
   id!: string | number;
   mode!: string | number;
