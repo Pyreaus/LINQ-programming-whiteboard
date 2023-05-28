@@ -1,6 +1,6 @@
 //[..] imports & namespace 
 
-[ApiController]                     //overriding default controller policy
+[ApiController]                     
 [Authorize(Policy="tracr-default",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces(MediaTypeNames.Application.Json)]
