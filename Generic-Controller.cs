@@ -58,7 +58,7 @@ public class EmployeeController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
-    [ActionName("AddEmployee"), HttpPost("[action]")]
+    [ActionName("AddEmployee"),HttpPost("[action]")]
     public ActionResult<EmployeeViewModel> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
     {
         if (employeeReq is null) return BadRequest(employeeReq);
@@ -92,7 +92,7 @@ public class EmployeeController : ControllerBase
     /// <response code="204">invlaid id</response>
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("GetEmployee"), HttpGet("[action]/{id:guid}")]
+    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
     public async Task<ActionResult<EmployeeViewModel>> GetEmployee([FromRoute] Guid id)
     {
         Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
