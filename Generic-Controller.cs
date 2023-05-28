@@ -1,7 +1,7 @@
-[ApiController]                          //overriding default controller policy
-[Authorize(Policy="user-policy",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
+[ApiController]                     //overriding default controller policy
+[Authorize(Policy="tracr-default",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[Produces(MediaTypeNames.Application.Json)] 
+[Produces(MediaTypeNames.Application.Json)]
 [Route("api/v1/[controller]")]
 public class EmployeeController : ControllerBase
 {
@@ -10,24 +10,25 @@ public class EmployeeController : ControllerBase
     public readonly IMapper _mapper;
     public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
     {
-       (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
-    } 
-  
+        (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
+    }
+
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
     /// <response code="200">employee object list</response>
     /// <response code="404">missing employee objects</response>
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
     [ActionName("GetEmployees"),HttpGet("[action]")]
     public async Task<ActionResult<IEnumerable<EmployeeViewModel>>> GetEmployees()
     {
         IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
-        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>,IEnumerable<EmployeeViewModel>>(employees!);
+        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
         return employees is not null and IEnumerable<Employee> ? Ok(employeesVM) : StatusCode(404);
     }
-    
+
     /// <summary>
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
@@ -41,9 +42,9 @@ public class EmployeeController : ControllerBase
     public async Task<ActionResult<EmployeeViewModel>> EditEmployee([FromRoute] Guid id, [FromBody] AddModifyEmpReq modifyReq)
     {
         Employee? empEntry = await _employeeService.GetEmployeeByIdAsync(id);
-        if ((empEntry is null)||(modifyReq is null)) return StatusCode(204);
-        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(empEntry!);
+        if ((empEntry is null) || (modifyReq is null)) return StatusCode(204);
         _mapper.Map(modifyReq, empEntry);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(empEntry!);
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
     }
@@ -57,29 +58,13 @@ public class EmployeeController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
-    [ActionName("AddEmployee"),HttpPost("[action]")]
+    [ActionName("AddEmployee"), HttpPost("[action]")]
     public ActionResult<EmployeeViewModel> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
     {
         if (employeeReq is null) return BadRequest(employeeReq);
-        Employee createdEmployee = _employeeService.CreateEmployee(_mapper.Map<AddModifyEmpReq,Employee>(employeeReq));
-        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(createdEmployee);
+        Employee createdEmployee = _employeeService.CreateEmployee(_mapper.Map<AddModifyEmpReq, Employee>(employeeReq));
+        EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(createdEmployee);
         return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
-    }
-    
-    /// <summary>
-    /// GET: api/{version}/Employee/GetEmployee/{id}
-    /// </summary>
-    /// <param name="id">Guid of employee</param>
-    /// <response code="200">employee object</response>
-    /// <response code="204">invlaid id</response>
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
-    public async Task<ActionResult<EmployeeViewModel>> GetEmployee([FromRoute] Guid id)
-    {
-        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
-        EmployeeViewModel employeeVM = _mapper.Map<Employee,EmployeeViewModel>(employee!);
-        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
     }
 
     /// <summary>
@@ -99,6 +84,21 @@ public class EmployeeController : ControllerBase
         return Ok(200);
     }
 
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <response code="200">employee object</response>
+    /// <response code="204">invlaid id</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
+    [ActionName("GetEmployee"), HttpGet("[action]/{id:guid}")]
+    public async Task<ActionResult<EmployeeViewModel>> GetEmployee([FromRoute] Guid id)
+    {
+        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(employee!);
+        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
+    }
+
     //[..]
-    #endregion
 }
