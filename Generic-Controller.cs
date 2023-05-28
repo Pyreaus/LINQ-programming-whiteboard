@@ -5,9 +5,9 @@
 [Route("api/v1/[controller]")]
 public class EmployeeController : ControllerBase
 {
-    private readonly ILogger<EmployeeController> _logger;
+    private readonly IMapper _mapper;
     private readonly IEmployeeService _employeeService;
-    public readonly IMapper _mapper;
+    private readonly ILogger<EmployeeController> _logger;
     public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
     {
         (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
