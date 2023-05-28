@@ -51,7 +51,7 @@ export class EmployeeAddEditComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id') ?? '0';
     this.mode = Number(this.id) == 0 ? 'add' : 'edit';
     this.employee$ = this.employeeService.GetEmployee(this.id);
-  }                                                               //sort alg
+  }                                                               //sort expression
   SortResult2(x: number, asc: boolean = true): void {
     this.DepList = this.UnfilteredDepList.sort(function (a, b) {
       return asc ? (a[x] > b[x]) ? 1 : ((a[x] < b[x]) ? -1 : 0) : (b[x] > a[x]) ? 1 : ((b[x] < a[x]) ? -1 : 0);
