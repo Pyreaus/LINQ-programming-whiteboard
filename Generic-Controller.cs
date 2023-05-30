@@ -13,7 +13,7 @@ public class EmployeeController : ControllerBase
 
     public EmployeeController(IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService empService)
     {
-        (_mapper, _employeeService, _logger) = (mapper, empService ?? NullArg<IEmployeeService>(empService!), logger);
+        (_employeeService, _mapper, _logger) = (empService ?? NullArg<IEmployeeService>(empService!), mapper, logger);
     }
    
     /// <summary>
