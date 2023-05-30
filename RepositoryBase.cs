@@ -5,7 +5,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		#region infrastructure 
 		private TR? _localContext;                                    
 		private readonly DbSet<TE> _dbSet;
-		private readonly ILogger<TL> _logger;
+		private readonly ILogger<TL>? _logger;
 
 		private IDbFactory<TR> DbFactory { get; }                     
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
