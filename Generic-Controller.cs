@@ -8,11 +8,13 @@
 public class EmployeeController : ControllerBase
 {
     private readonly IMapper _mapper;
-    private readonly IEmployeeService _employeeService;
     private readonly ILogger<EmployeeController> _logger;
-    public EmployeeController(ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
+    private readonly TRACRWorkUnit _unitOfWork;
+    private readonly IEmployeeService _employeeService;
+
+    public EmployeeController(ILogger<EmployeeController> logger, TRACRWorkUnit unitOfWork, IEmployeeService employeeService, IMapper mapper)
     {
-        (_logger, this._employeeService, _mapper) = (logger, employeeService, mapper);
+        (_logger, this._employeeService, _mapper, _unitOfWork) = (logger, employeeService, mapper, unitOfWork);
     }
 
     /// <summary>
