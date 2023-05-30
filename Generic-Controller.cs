@@ -11,11 +11,12 @@ public class EmployeeController : ControllerBase
     private readonly ILogger<EmployeeController> _logger;
     private readonly TRACRWorkUnit _unitOfWork;
     private readonly IEmployeeService _employeeService;
+    #region controller dependancies: 
     public EmployeeController(ILogger<EmployeeController> logger, TRACRWorkUnit unitOfWork, IEmployeeService employeeService, IMapper mapper)
     {
         (_logger, this._employeeService, _mapper, _unitOfWork) = (logger, employeeService, mapper, unitOfWork);
     }
-
+    #endregion
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
