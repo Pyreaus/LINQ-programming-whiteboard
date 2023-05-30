@@ -9,12 +9,13 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 
 		private IDbFactory<TR> DbFactory { get; }                     
 		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
-		#endregion  
-		protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger) 
-		{
-			DbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
-			(_logger, _dbSet) = (logger, InitContext.Set<TE>());
-		}
+		private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
+       		#endregion
+       		protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
+       		{
+           		 DbFactory = dbFactory ?? NullArg<IDbFactory<TR>>(dbFactory!);
+           		 (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>>(logger!));
+       		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE,object>>? include=null,
 			bool disableTracking = true)
