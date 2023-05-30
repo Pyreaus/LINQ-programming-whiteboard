@@ -11,7 +11,7 @@ public class EmployeeController : ControllerBase
     private readonly ILogger<EmployeeController> _logger;
     private readonly TRACRWorkUnit _unitOfWork;
     private readonly IEmployeeService _employeeService;
-    public EmployeeController(TRACRWorkUnit unitOfWork, ILogger<EmployeeController> logger, IEmployeeService employeeService, IMapper mapper)
+    public EmployeeController(TRACRWorkUnit unitOfWork, IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService employeeService)
     {
         (_logger, this._employeeService, _mapper, _unitOfWork) = (logger, employeeService, mapper, unitOfWork);
     }
