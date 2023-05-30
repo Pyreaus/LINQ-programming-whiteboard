@@ -8,11 +8,12 @@ public class EmployeeController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly ILogger<EmployeeController> _logger;
-    private readonly TRACRWorkUnit _unitOfWork;
     private readonly IEmployeeService _employeeService;
-    public EmployeeController(TRACRWorkUnit unitOfWork, IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService employeeService)
+    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
+
+    public EmployeeController(IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService empService)
     {
-        (_logger, this._employeeService, _mapper, _unitOfWork) = (logger, employeeService, mapper, unitOfWork);
+        (_mapper, _employeeService, _logger) = (mapper, empService ?? NullArg<IEmployeeService>(empService!), logger);
     }
    
     /// <summary>
