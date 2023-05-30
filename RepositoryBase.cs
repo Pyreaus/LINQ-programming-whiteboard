@@ -14,7 +14,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
        		protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
        		{
            		 DbFactory = dbFactory ?? NullArg<IDbFactory<TR>>(dbFactory!);
-           		 (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>?>(logger!));
+           		 (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>>(logger!));
        		}
 		#region implementation
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE,object>>? 
