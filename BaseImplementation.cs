@@ -2,7 +2,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 {
 	public abstract class RepositoryBase<TE, TR, TL> where TE : class where TR : DbContext
 	{
-		#region infrastructure 
+		#region [infrastructure] 
 		private TR? _localContext;                                    
 		private readonly DbSet<TE> _dbSet;
 		private readonly ILogger<TL>? _logger;
@@ -16,7 +16,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
            		 DbFactory = dbFactory ?? NullArg<IDbFactory<TR>>(dbFactory!);
            		 (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>>(logger!));
        		}
-		#region implementation
+		#region [implementation]
 		public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
 			IIncludableQueryable<TE,object>>? include = null, bool disableTracking = true)
 		{
