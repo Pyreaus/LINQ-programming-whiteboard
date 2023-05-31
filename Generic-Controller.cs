@@ -7,9 +7,9 @@
 public class EmployeeController : ControllerBase
 {
     private readonly IMapper _mapper;
+    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
     private readonly ILogger<EmployeeController> _logger;
     private readonly IEmployeeService _employeeService;
-    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
 
     public EmployeeController(IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService empService)
     {
