@@ -7,9 +7,9 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		private readonly DbSet<TE> _dbSet;
 		private readonly ILogger<TL>? _logger;
 		
-		private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
-		private IDbFactory<TR> DbFactory { get; }                     
+		private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));                  
 		protected TR InitContext => _localContext ??= DbFactory.Init();
+		private IDbFactory<TR> DbFactory { get; }   
        		#endregion
        		protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
        		{
