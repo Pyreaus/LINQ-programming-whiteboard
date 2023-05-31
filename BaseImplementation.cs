@@ -9,7 +9,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		
 		private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
 		private IDbFactory<TR> DbFactory { get; }                     
-		protected TR InitContext => _localContext ?? (_localContext = DbFactory.Init());
+		protected TR InitContext => _localContext ??= DbFactory.Init();
        		#endregion
        		protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
        		{
