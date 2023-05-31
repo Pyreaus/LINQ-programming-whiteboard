@@ -56,9 +56,9 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			if (include != null) query = include(query);
 			return await query.Where(predicate).ToListAsync();
      	        }
-		#endregion
 		
 		//  [...]
+		#endregion
 	}
 }
  
