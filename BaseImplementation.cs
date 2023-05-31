@@ -25,6 +25,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 			if (include != null) query = include(query);
 			return await query.FirstOrDefaultAsync(predicate);
 		}
+		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
 		public virtual IQueryable<TE?> GetAllAsQueryable(Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
         	{
           		 IQueryable<TE> query = _dbSet;
@@ -35,7 +36,6 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
        		{
           		 return disableTracking ? await _dbSet.AsNoTracking().ToListAsync() : await _dbSet.ToListAsync();
         	}
-		public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
 		public virtual void Update(TE entity)
 		{
 			_dbSet.Attach(entity);
