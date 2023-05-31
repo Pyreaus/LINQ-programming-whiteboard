@@ -46,6 +46,7 @@ namespace // i.e. NoelsWhiteboard.DAL.Infrastructure
 		{
 			IEnumerable<TE> objects = _dbSet.Where(predicate).AsEnumerable();
 			foreach (TE obj in objects) _dbSet.Remove(obj);
+			_logger.LogWarning("removed entity");
 		}
 		public virtual async Task<IEnumerable<TE?>> GetManyAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, 
 			IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
