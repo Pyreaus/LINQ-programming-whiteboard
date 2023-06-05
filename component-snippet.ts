@@ -2,28 +2,77 @@ enum UserType {Trainee='Trainee',Reviewer='Reviewer',Admin='Admin',Unauthorized=
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.scss'],
+  encapsulation: ViewEncapsulation.Emulated
 })
-export class HOMEComponent implements OnInit {
+export class HOMEComponent implements OnInit, AfterViewInit{
+  @ViewChild('tdElements', { static: false }) tdElementsRef!: ElementRef[];
   @ViewChild('sc') sc!: Scroller;
-  userType$: BehaviorSubject<UserType>;
-  user!: Observable<any>;
-  date!: Date[];
-  items: string[][] = []; // TODO: populate with user data
-  visible = true;
-  constructor() { this.userType$ = new BehaviorSubject<UserType>(UserType.Unauthorized) }
 
-    ngOnInit(): void {
-      this.items = Array.from({ length: 1000 }).map((_, i) =>
-      Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
-      setTimeout(() => {
-        this.userType$.next(UserType.Admin);
-      }, 1000);
+  user!: Observable<any>;
+  items: string[][] = [];
+  date!: Date[];
+  weekRange!:string[];
+  rowSelected!: string;
+  barVisible!: Boolean;
+  userType$: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(UserType.Unauthorized);
+  constructor(private renderer: Renderer2, private elementRef: ElementRef) {
+    [this.rowSelected,this.barVisible] = ['cal',true];
+  }
+  ngOnInit(): void {
+    this.items = Array.from({ length: 1000 }).map((_, i) =>
+    Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
+    setTimeout(() => {
+      this.userType$.next(UserType.Trainee);
+    }, 1000);
+  }
+  selected(num: number): void {
+    let month!: number;
+    let monthNumber: number[] = [1,2,3,4,5,6,7,8,9,10,11,12];
+    let weekRange!: string[];
+    let year: string =  this.elementRef.nativeElement.querySelectorAll('.p-datepicker-year')
+      [0].innerHTML.replace(/\s/g,'').slice(-2);
+    let monthName: string[] = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    for(let i = 0; i < monthName.length; i++){
+      if(this.elementRef.nativeElement.querySelectorAll('.p-datepicker-month')[0].innerHTML.replace(/\s/g,'') === monthName[i]){
+        month = monthNumber[i]}
     }
-    reset(): void {
-        this.sc.scrollToIndex(0, 'smooth');
-    }
-}
+    switch(num){
+      case 1:
+        let [day1w1,day2w1]: [number,number] = [this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[0].innerHTML.replace(/\D/g,''),
+          this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[6].innerHTML.replace(/\D/g,'')
+        ];
+        let startMonth:number = Number(day1w1) < Number(day2w1) ? month : month - 1;
+        [weekRange,this.rowSelected] = [[`${day1w1}/${startMonth}/${year}`,`${day2w1}/${month}/${year}`],'cal1'];
+          break;
+        case 2:
+          [weekRange,this.rowSelected] = [[`${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[7].innerHTML.replace(/\D/g,'')}/${month}/${year}`,
+        `${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[13].innerHTML.replace(/\D/g,'')}/${month}/${year}`],'cal2'];
+          break
+        case 3:
+          [weekRange,this.rowSelected] = [[`${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[14].innerHTML.replace(/\D/g,'')}/${month}/${year}`,
+        `${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[20].innerHTML.replace(/\D/g,'')}/${month}/${year}`],'cal3'];
+          break;
+        case 4:
+          [weekRange,this.rowSelected] = [[`${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[21].innerHTML.replace(/\D/g,'')}/${month}/${year}`,
+        `${this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[27].innerHTML.replace(/\D/g,'')}/${month}/${year}`],'cal4'];
+          break;
+        case 5:
+          let [day1w4,day2w4]: [number,number] = [this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[28]
+          .innerHTML.replace(/\D/g,''),this.elementRef.nativeElement.querySelectorAll('.p-ripple.p-disabled')[34].innerHTML.replace(/\D/g,'')];
+          let endMonth:number = Number(day1w4) < Number(day2w4) ? month : month + 1;
+          [weekRange,this.rowSelected] = [[`${day1w4}/${month}/${year}`,`${day2w4}/${endMonth}/${year}`],'cal5'];
+          break;
+      }
+      console.log(weekRange + '' + this.rowSelected);
+  }
+  reset(): void {
+    this.sc.scrollToIndex(0,'smooth')
+  }
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      //
+    },0);
                                                               //   *** Employee sub-component ts file **
 export class EmployeeAddEditComponent implements OnInit {
   id!: string | number;
