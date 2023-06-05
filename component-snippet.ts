@@ -10,11 +10,11 @@ export class HOMEComponent implements OnInit, AfterViewInit{
   @ViewChild('sc') sc!: Scroller;
 
   user!: Observable<any>;
+  rowSelected!: string;
+  barVisible!: boolean;
   items: string[][] = [];
   date!: Date[];
   weekRange!:string[];
-  rowSelected!: string;
-  barVisible!: boolean;
   userType$: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(UserType.Unauthorized);
   constructor(private renderer: Renderer2, private elementRef: ElementRef) {
     [this.rowSelected,this.barVisible] = ['cal',true];
