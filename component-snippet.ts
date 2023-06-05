@@ -26,6 +26,12 @@ export class HOMEComponent implements OnInit, AfterViewInit{
       this.userType$.next(UserType.Trainee);
     }, 1000);
   }
+  menuVal!: string;
+  stateOptions: any[] = [
+    { label: 'Current', menuVal: 'Current' },
+    { label: 'Past', menuVal: 'Past', constant: true },
+    { label: 'New', menuVal: 'New'}
+  ];
   selected(num: number): void {
     let month!: number;
     let monthNumber: number[] = [1,2,3,4,5,6,7,8,9,10,11,12];
