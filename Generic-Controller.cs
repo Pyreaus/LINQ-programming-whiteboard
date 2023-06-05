@@ -39,6 +39,7 @@ public class EmployeeController : ControllerBase
     /// <response code="200">employee object</response>
     /// <response code="204">invlaid id</response>
     [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
@@ -59,6 +60,7 @@ public class EmployeeController : ControllerBase
     /// <response code="201">employee object</response>
     /// <response code="400">not created</response>
     [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
     [ActionName("AddEmployee"),HttpPost("[action]")]
@@ -76,6 +78,7 @@ public class EmployeeController : ControllerBase
     /// <param name="id">Guid of employee</param>
     /// <response code="204">invlaid id</response>
     /// <response code="200">deleted successfully</response>
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ActionName("DeleteEmployee"),HttpDelete("[action]/{id:guid}")]
@@ -93,6 +96,7 @@ public class EmployeeController : ControllerBase
     /// <param name="id">Guid of employee</param>
     /// <response code="200">employee object</response>
     /// <response code="204">invlaid id</response>
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
