@@ -68,10 +68,10 @@ public class EmployeeController : ControllerBase
         IEnumerable<Trainee?> trainees = await _userService.GetTraineesAsync();
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
         foreach (TraineeViewModel T in traineesVM)
-            {
-                T.Photo = (bnetUrl + users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
-                (T.FirstName, T.LastName) = (users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.FirstName ?? T.FirstName,
-                    users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.LastName ?? T.LastName
+           {
+                T.Photo = (bnetUrl + users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
+                (T.FirstName, T.LastName) = (users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.FirstName ?? T.FirstName,
+                    users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.LastName ?? T.LastName
                 );
             }
         return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
