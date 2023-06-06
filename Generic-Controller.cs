@@ -29,7 +29,7 @@ public class EmployeeController : ControllerBase
     {
         IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
         IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
-        return employees is not null and IEnumerable<Employee> ? Ok(employeesVM) : StatusCode(404);
+        return (employees != null) && (typeof(IEnumerable<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public class EmployeeController : ControllerBase
     {
         Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
         EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(employee!);
-        return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
+        return (employee != null) && (typeof(Employee) == employees.GetType()) ? Ok(employeeVM) : StatusCode(204);
     }
     
 
