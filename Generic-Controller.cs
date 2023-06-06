@@ -107,38 +107,6 @@ public class EmployeeController : ControllerBase
         return employee is not null and Employee ? Ok(employeeVM) : StatusCode(204);
     }
     
-    /// <summary>
-    /// GET: api/{version}/UserType/GetUserType
-    /// </summary>
-    /// <response code="200">{ name:"",role:"" }</response>
-    /// <response code="511">unauthorized client</response>
-    [ProducesResponseType(StatusCodes.Status511NetworkAuthenticationRequired)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
-    [ActionName("GetUserType"),HttpGet("[action]")]
-    public async Task<ActionResult<UserViewModel?>> GetUserType([FromServices] IWebHostEnvironment webHostEnvironment)
-    {
-        IWebHostEnvironment env = webHostEnvironment ?? NullArg<IWebHostEnvironment>(webHostEnvironment!);
-        if (_claimsPrincipal.Identity?.IsAuthenticated == true)
-        {
-            Claim? usernameClaim = _claimsPrincipal.FindFirst("DomainUsername");
-            if (usernameClaim?.Value != null)
-            {
-                PeopleFinderUser? user = await _userService.GetByDomainAsync(usernameClaim.Value);
-                if (user != null && user?.OtherPfid != null)
-                {
-                    string? role = await _userService.GetRoleByPfidAsync((int)user.OtherPfid);
-                    UserViewModel? userVM = role != null ? _mapper.Map<PeopleFinderUser,UserViewModel>(user) : null;
-                    userVM!.Role = role ?? "Unauthorized";
-                    return userVM != null ? Ok(userVM) : StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
-                }
-                return StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
-            }
-            _logger.LogError("Null claim {CP}",_claimsPrincipal.FindFirst("DomainUsername"));
-            return env.IsDevelopment() ? throw new Exception() : StatusCode(StatusCodes.Status500InternalServerError);
-         }
-        _logger.LogError("Null Identity {CP}",_claimsPrincipal.Identity);
-        return env.IsDevelopment() ? throw new Exception() : StatusCode(StatusCodes.Status500InternalServerError);
-    }
 
     //[..]
 }
