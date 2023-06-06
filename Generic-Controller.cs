@@ -52,6 +52,30 @@ public class EmployeeController : ControllerBase
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
     }
+    
+    /// <summary>
+    /// GET: api/{version}/UserType/GetTrainees
+    /// </summary>
+    /// <response code="200">{ name:"",role:"" }</response>
+    /// <response code="404">data not found</response>
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
+    [ActionName("GetTrainees"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTrainees()
+    {
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<Trainee?> trainees = await _userService.GetTraineesAsync();
+        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
+        foreach (TraineeViewModel T in traineesVM)
+            {
+                T.Photo = (bnetUrl + users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
+                (T.FirstName, T.LastName) = (users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.FirstName ?? T.FirstName,
+                    users!.SingleOrDefault(u => u!.PfId == T.TraineePfid)?.LastName ?? T.LastName
+                );
+            }
+        return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
+    }
 
     /// <summary>
     /// POST: api/{version}/Employee/AddEmployee
