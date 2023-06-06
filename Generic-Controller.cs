@@ -25,7 +25,7 @@ public class EmployeeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
     [ActionName("GetEmployees"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<EmployeeViewModel>>?> GetEmployees()
+    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
     {
         IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
         IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
