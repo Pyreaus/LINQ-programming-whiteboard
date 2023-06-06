@@ -117,8 +117,8 @@ export class EmployeeAddEditComponent implements OnInit {
     this.employee$ = this.employeeService.GetEmployee(this.id);
   }                                                             
   SortResult2(x: number, asc: boolean = true): void {
-    this.DepList = this.UnfilteredDepList.sort(function (a, b) {
-      return asc ? (a[x] > b[x]) ? 1 : ((a[x] < b[x]) ? -1 : 0) : (b[x] > a[x]) ? 1 : ((b[x] < a[x]) ? -1 : 0);   //TRUNCATED filter expression
+    this.DepList = this.UnfilteredDepList.sort(function (a, b) {// filter expression
+      return asc ? (a[x] > b[x]) ? 1 : ((a[x] < b[x]) ? -1 : 0) : (b[x] > a[x]) ? 1 : ((b[x] < a[x]) ? -1 : 0);   
     });
   }
   onSubmitAdd(): void {
