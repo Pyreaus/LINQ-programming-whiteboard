@@ -9,24 +9,31 @@ export class HOMEComponent implements OnInit, AfterViewInit{
   @ViewChild('tdElements', { static: false }) tdElementsRef!: ElementRef[];
   @ViewChild('sc') sc!: Scroller;
 
-  user!: Observable<any>;
+  items: string[][] = [];
+  user$!: Observable<User>;
+  userType$: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(UserType.Unauthorized);
+  trainees$!: null | Observable<Trainee[]>;
+  date!: Date[];
   rowSelected!: string;
   barVisible!: boolean;
-  items: string[][] = [];
-  date!: Date[];
   weekRange!:string[];
-  userType$: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(UserType.Unauthorized);
-  constructor(private renderer: Renderer2, private elementRef: ElementRef) {
-    [this.rowSelected,this.barVisible] = ['cal',true];
-  }
+  constructor(private renderer: Renderer2, private elementRef: ElementRef) { [this.rowSelected,this.barVisible] = ['cal',true] }
   ngOnInit(): void {
     this.items = Array.from({ length: 1000 }).map((_, i) =>
     Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
     setTimeout(() => {
-      this.userType$.next(UserType.Trainee);
-    }, 1000);
+      this.user$ = userService.getUser().subscribe({next: (res) => {this.user$ = res }, error: (err) => {console.error(err)} });
+      this.user$ ? this.userType$.next(this.user$.Role) : void(0);
+      this.trainees$ = (this.userType$ == 'Admin') ? this.userService.getTrainees().subscribe({
+        next: (res) => {this.trainees$ = res}, error: (err) => {console.error(err)} }) : (this.userType$ == 'Reviewer') ?
+        this.userService.getTraineesByReviewer(this.user$.Pfid).subscribe({ next: (res) => {
+          this.trainees$ = res}, error: (err) => {console.error(err)} }) : null }, 500);
   }
-  menuVal!: string;
+  menuVal = 'Current';
+  stateOptions2: any[] = [
+    { label: 'Current', menuVal: 'Current' },
+    { label: 'Past', menuVal: 'Past', constant: true },
+  ];
   stateOptions: any[] = [
     { label: 'Current', menuVal: 'Current' },
     { label: 'Past', menuVal: 'Past', constant: true },
@@ -77,8 +84,10 @@ export class HOMEComponent implements OnInit, AfterViewInit{
   }
   ngAfterViewInit(): void {
     setTimeout(() => {
-      //
-    },0);
+      // console.error(this.menuVal)
+    },5000);
+  }
+}
                                                               //   *** Employee sub-component ts file **
 export class EmployeeAddEditComponent implements OnInit {
   id!: string | number;
@@ -106,10 +115,10 @@ export class EmployeeAddEditComponent implements OnInit {
     this.id = this.route.snapshot.paramMap.get('id') ?? '0';
     this.mode = Number(this.id) == 0 ? 'add' : 'edit';
     this.employee$ = this.employeeService.GetEmployee(this.id);
-  }                                                               //sort expression
+  }                                                             
   SortResult2(x: number, asc: boolean = true): void {
     this.DepList = this.UnfilteredDepList.sort(function (a, b) {
-      return asc ? (a[x] > b[x]) ? 1 : ((a[x] < b[x]) ? -1 : 0) : (b[x] > a[x]) ? 1 : ((b[x] < a[x]) ? -1 : 0);
+      return asc ? (a[x] > b[x]) ? 1 : ((a[x] < b[x]) ? -1 : 0) : (b[x] > a[x]) ? 1 : ((b[x] < a[x]) ? -1 : 0);   //TRUNCATED filter expression
     });
   }
   onSubmitAdd(): void {
