@@ -104,7 +104,7 @@ public class EmployeeController : ControllerBase
     {
         Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
         EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(employee!);
-        return (employee != null) && (typeof(Employee) == employees.GetType()) ? Ok(employeeVM) : StatusCode(204);
+        return (employee != null) && (typeof(Employee) == employee.GetType()) ? Ok(employeeVM) : StatusCode(204);
     }
     
 
