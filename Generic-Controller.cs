@@ -44,8 +44,8 @@ public class EmployeeController : ControllerBase
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
     {
-        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(users, partial!);
         foreach (TraineeViewModel trainee in traineesVM)
