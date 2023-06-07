@@ -15,22 +15,6 @@ public class EmployeeController : ControllerBase
     {
         (_employeeService, _mapper, _logger) = (empService ?? NullArg<IEmployeeService>(empService!), mapper, logger);
     }
-   
-    /// <summary>
-    /// GET: api/{version}/Employee/GetEmployees
-    /// </summary>
-    /// <response code="200">{employee view objects}</response>
-    /// <response code="404">missing employee objects</response>
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
-    [ActionName("GetEmployees"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
-    {
-        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
-        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
-        return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
-    }
     
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{id}
@@ -44,15 +28,11 @@ public class EmployeeController : ControllerBase
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
     {
-        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
-        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
-        foreach (TraineeViewModel trainee in traineesVM)
-            {
-                trainee.Photo = (bnetUrl + users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
-                trainee.FirstName = users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.FirstName ?? trainee.FirstName;
-                trainee.LastName = users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.LastName ?? trainee.LastName;
-            }
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
+        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(users, partial!);
+        foreach (TraineeViewModel trainee in traineesVM) trainee.Photo ??= "../../../assets/profilePic.png";
         return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
     }
 
@@ -75,6 +55,22 @@ public class EmployeeController : ControllerBase
         EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(empEntry!);
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
+    }
+    
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployees
+    /// </summary>
+    /// <response code="200">{employee view objects}</response>
+    /// <response code="404">missing employee objects</response>
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
+    [ActionName("GetEmployees"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
+    {
+        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
+        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
+        return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
     }
 
     /// <summary>
