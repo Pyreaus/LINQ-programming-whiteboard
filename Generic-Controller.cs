@@ -33,7 +33,7 @@ public class EmployeeController : ControllerBase
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(users, partial!);
         foreach (TraineeViewModel trainee in traineesVM) trainee.Photo ??= "../../../assets/profilePic.png";
-        return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
+        return (trainees != null) && (trainees.GetType() == typeof(List<Trainee>)) ? Ok(traineesVM) : StatusCode(404);
     }
 
     /// <summary>
