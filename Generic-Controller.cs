@@ -71,8 +71,7 @@ public class EmployeeController : ControllerBase
            {
                 T.Photo = (bnetUrl + users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
                 (T.FirstName, T.LastName) = (users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.FirstName ?? T.FirstName,
-                    users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.LastName ?? T.LastName
-                );
+                    users!.SingleOrDefault(U => U!.PfId == T.TraineePfid)?.LastName ?? T.LastName);
             }
         return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
     }
