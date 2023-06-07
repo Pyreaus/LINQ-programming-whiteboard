@@ -45,9 +45,9 @@ public class EmployeeController : ControllerBase
     public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
     {
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
-        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<PeopleFinderUser?> unfilteredUsers = await _userService.GetPFUsersAsync();
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
-        IEnumerable<PeopleFinderUser?> filtered = users.Where(u => partial.Any(p => p?.TraineePfid == u?.OtherPfid));
+        IEnumerable<PeopleFinderUser?> filtered = unfilteredUsers.Where(u => partial.Any(p => p?.TraineePfid == u?.OtherPfid));
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(filtered, partial!);
         foreach (TraineeViewModel trainee in traineesVM)
         {
