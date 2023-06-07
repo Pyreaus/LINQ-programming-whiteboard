@@ -11,13 +11,14 @@ export class HOMEComponent implements OnInit, AfterViewInit{
 
   items: string[][] = [];
   user$!: Observable<User>;
+  staticTrainees$!: Promise<Trainee[]>;
   userType$: BehaviorSubject<UserType> = new BehaviorSubject<UserType>(UserType.Unauthorized);
-  trainees$!: null | Observable<Trainee[]>;
+  trainees$: Observable<Trainee[]> = from(this.staticTrainees$);
   date!: Date[];
   rowSelected!: string;
   barVisible!: boolean;
   weekRange!:string[];
-  constructor(private renderer: Renderer2, private elementRef: ElementRef) { [this.rowSelected,this.barVisible] = ['cal',true] }
+  constructor(private userService: UserService, private elementRef: ElementRef) { [this.rowSelected,this.barVisible] = ['cal',true] }
   ngOnInit(): void {
     this.items = Array.from({ length: 1000 }).map((_, i) =>
     Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
