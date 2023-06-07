@@ -19,7 +19,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
-    /// <response code="200">{ employee view objects }</response>
+    /// <response code="200">{employee view objects}</response>
     /// <response code="404">missing employee objects</response>
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,7 +36,7 @@ public class EmployeeController : ControllerBase
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
-    /// <response code="200">{ employee view object }</response>
+    /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
@@ -56,7 +56,7 @@ public class EmployeeController : ControllerBase
     /// <summary>
     /// GET: api/{version}/UserType/GetTrainees
     /// </summary>
-    /// <response code="200">{ trainee view objects }</response>
+    /// <response code="200">{trainee view objects}</response>
     /// <response code="404">data not found</response>
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -80,7 +80,7 @@ public class EmployeeController : ControllerBase
     /// POST: api/{version}/Employee/AddEmployee
     /// </summary>
     /// <param name="employeeReq">AddModifyEmpReq DTO</param>
-    /// <response code="201">{ employee view objects }</response>
+    /// <response code="201">{employee view objects}</response>
     /// <response code="400">not created</response>
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
@@ -117,7 +117,7 @@ public class EmployeeController : ControllerBase
     /// GET: api/{version}/Employee/GetEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
-    /// <response code="200">{ employee view object }</response>
+    /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
