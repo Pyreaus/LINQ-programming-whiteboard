@@ -50,9 +50,8 @@ public class EmployeeController : ControllerBase
         foreach (TraineeViewModel trainee in traineesVM)
             {
                 trainee.Photo = (bnetUrl + users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.Photo) ?? "../../../assets/profilePic.png";
-                (trainee.FirstName, trainee.LastName) = (
-                    users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.FirstName ?? trainee.FirstName,
-                    users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.LastName ?? trainee.LastName);
+                trainee.FirstName = users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.FirstName ?? trainee.FirstName;
+                trainee.LastName = users!.SingleOrDefault(usr => usr!.PfId == trainee.TraineePfid)?.LastName ?? trainee.LastName;
             }
         return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
     }
