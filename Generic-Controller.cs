@@ -44,15 +44,12 @@ public class EmployeeController : ControllerBase
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
     {
-        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
         IEnumerable<PeopleFinderUser?> filtered = users.Where(u => partial.Any(p => p?.TraineePfid == u?.OtherPfid));
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(filtered, partial!);
-        foreach (TraineeViewModel trainee in traineesVM)
-        {
-            trainee.Photo ??= "../../../assets/profilePic.png";
-        }
+        foreach (TraineeViewModel trainee in traineesVM) trainee.Photo ??= "../../../assets/profilePic.png";
         return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
     }
 
