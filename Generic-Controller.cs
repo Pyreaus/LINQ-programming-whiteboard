@@ -38,7 +38,7 @@ public class EmployeeController : ControllerBase
     /// <param name="pfid">PFID of reviwer</param>
     /// <response code="200">{trainee view objects}</response>
     /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-reviewer")]
+    // [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
@@ -47,7 +47,8 @@ public class EmployeeController : ControllerBase
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
-        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(users, partial!);
+        IEnumerable<PeopleFinderUser?> filtered = users.Where(u => partial.Any(p => p?.TraineePfid == u?.OtherPfid));
+        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(filtered, partial!);
         foreach (TraineeViewModel trainee in traineesVM)
         {
             trainee.Photo ??= "../../../assets/profilePic.png";
