@@ -41,7 +41,7 @@ public class EmployeeController : ControllerBase
     [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
-    [ActionName("GetTraineesByReviewer"),HttpGet("[action]")]
+    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{id:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
     {
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
