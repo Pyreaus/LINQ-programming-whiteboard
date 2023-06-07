@@ -23,7 +23,7 @@ export class HOMEComponent implements OnInit, AfterViewInit{
     this.items = Array.from({ length: 1000 }).map((_, i) =>
     Array.from({ length: 1000 }).map((_j, j) => `Item #${i}_${j}`));
     setTimeout(() => {
-      this.user$ = userService.getUser().subscribe({next: (res) => {this.user$ = res }, error: (err) => {console.error(err)} });
+      this.user$ = this.userService.getUser().subscribe({next: (res) => {this.user$ = res }, error: (err) => {console.error(err)} });
       this.user$ ? this.userType$.next(this.user$.Role) : void(0);
       this.trainees$ = (this.userType$ == 'Admin') ? this.userService.getTrainees().subscribe({
         next: (res) => {this.trainees$ = res}, error: (err) => {console.error(err)} }) : (this.userType$ == 'Reviewer') ?
