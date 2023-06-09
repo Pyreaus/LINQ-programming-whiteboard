@@ -49,7 +49,9 @@ public class EmployeeController : ControllerBase
         IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
         IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(
             unfilteredUsers.Where(
-                U => partial.Any(P => P?.TraineePfid == U?.OtherPfid)
+                U => partial.Any(
+                    P => P?.TraineePfid == U?.OtherPfid
+                )
             ), partial!
         );
         foreach (TraineeViewModel? T in traineesVM) T!.Photo = (bnetUrl + T.Photo?.ToString()) ?? "../../../assets/profilePic.png";
