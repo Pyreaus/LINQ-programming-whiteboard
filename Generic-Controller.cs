@@ -47,7 +47,7 @@ public class EmployeeController : ControllerBase
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees.Where(trainee => 
         users.Any(user => user?.OtherPfid == trainee?.TraineePfid)).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
-        foreach (TraineeViewModel trainee in traineesVM)
+        foreach (TraineeViewModel? trainee in traineesVM)
         {
             trainee!.Photo = (bnetUrl + trainee.Photo?.ToString()) ?? "../../../assets/profilePic.png";
             _mapper.Map(users.FirstOrDefault(user => trainee.TraineePfid == user?.OtherPfid)!, trainee);
