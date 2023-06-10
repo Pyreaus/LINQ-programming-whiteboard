@@ -31,31 +31,28 @@ public class EmployeeController : ControllerBase
         IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
         return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
     }
-
+    
     /// <summary>
-    /// GET: api/{version}/User/GetTraineesByReviewer/{id}
+    /// GET: api/{version}/User/GetTrainees
     /// </summary>
-    /// <param name="pfid">PFID of reviwer</param>
     /// <response code="200">{trainee view objects}</response>
-    /// <response code="404">missing trainee objects</response>
-    // [Authorize(Policy="tracr-reviewer")]
+    /// <response code="404">missing employee objects</response>
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
-    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
+    [ActionName("GetTrainees"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTrainees()
     {
-        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
-        IEnumerable<PeopleFinderUser?> unfilteredUsers = await _userService.GetPFUsersAsync();
-        IEnumerable<TraineeViewModel?> partial = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees!);
-        IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<TraineeViewModel>>(
-            unfilteredUsers.Where(
-                U => partial.Any(
-                    P => P?.TraineePfid == U?.OtherPfid
-                )
-            ), partial!
-        );
-        foreach (TraineeViewModel? T in traineesVM) T!.Photo = (bnetUrl + T.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-        return (trainees != null) && (typeof(List<Trainee>) == trainees.GetType()) ? Ok(traineesVM) : StatusCode(404);
+        IEnumerable<Trainee?> trainees = await _userService.GetTraineesAsync();
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<TraineeViewModel> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(trainees.Where(
+        trainee => users.Any(user => user?.OtherPfid == trainee?.TraineePfid)).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
+        foreach (TraineeViewModel trainee in traineesVM)
+        {
+            trainee!.Photo = (bnetUrl + trainee.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+            _mapper.Map(users.FirstOrDefault(user => trainee.TraineePfid == user?.OtherPfid)!, trainee);
+        }
+        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
     }
 
     /// <summary>
