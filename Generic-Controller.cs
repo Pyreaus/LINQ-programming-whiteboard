@@ -65,12 +65,13 @@ public partial class UserController : ControllerBase
         return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = newTrainee?.ReviewerPfid }, traineeVM);
     }
     
-    [Obsolete("Maintenance")]
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
     /// </summary>
     /// <response code="200">{employee view objects}</response>
     /// <response code="404">missing employee objects</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
@@ -82,7 +83,6 @@ public partial class UserController : ControllerBase
         return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
     }
     
-    [Obsolete("Maintenance")]
     /// <summary>
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
@@ -90,6 +90,8 @@ public partial class UserController : ControllerBase
     /// <param name="modifyReq">AddModifyEmpReq DTO</param>
     /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -104,14 +106,15 @@ public partial class UserController : ControllerBase
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
     }
-
-    [Obsolete("Maintenance")]
+    
     /// <summary>
     /// POST: api/{version}/Employee/AddEmployee
     /// </summary>
     /// <param name="employeeReq">AddModifyEmpReq DTO</param>
     /// <response code="201">{employee view objects}</response>
     /// <response code="400">not created</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -125,13 +128,14 @@ public partial class UserController : ControllerBase
         return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
     }
 
-    [Obsolete("Maintenance")]
     /// <summary>
     /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
     /// <response code="204">invlaid id</response>
     /// <response code="200">deleted successfully</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -144,13 +148,14 @@ public partial class UserController : ControllerBase
         return Ok(200);
     }
 
-    [Obsolete("Maintenance")]
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
     /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
