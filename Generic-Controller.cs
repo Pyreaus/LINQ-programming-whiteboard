@@ -10,8 +10,8 @@ public partial class UserController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ILogger<UserController> _logger;
     private readonly ClaimsPrincipal _claimsPrincipal;
-    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
     private readonly string bnetUrl = "http://source/uploads/photos/";
+    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
     private readonly IUserService _userService;
     public UserController(ClaimsPrincipal claimsPrincipal, ILogger<UserController> logger, IUserService userService, IMapper mapper)
     {
