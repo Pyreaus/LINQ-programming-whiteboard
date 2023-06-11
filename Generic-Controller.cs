@@ -51,7 +51,8 @@ public class EmployeeController : ControllerBase
                 trainee => users.Any(
                     user => user?.OtherPfid == trainee?.TraineePfid
                 )
-            ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
+            ).OfType<Trainee>().ToList()!
+        ).OfType<TraineeViewModel>().ToList();
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
         foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TraineePfid == user?.OtherPfid)!, trainee);
         return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
