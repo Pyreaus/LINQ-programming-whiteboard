@@ -62,6 +62,7 @@ public class EmployeeController : ControllerBase
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
+    /// <param name="modifyReq">AddModifyEmpReq DTO</param>
     /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
     [Consumes(MediaTypeNames.Application.Json)]
