@@ -42,7 +42,7 @@ public class EmployeeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPFID] int pfid)
+    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
     {
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
