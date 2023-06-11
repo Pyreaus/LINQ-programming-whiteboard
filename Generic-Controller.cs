@@ -8,8 +8,8 @@ public partial class UserController : ControllerBase
 {
     #region [Infrastructure]
     private readonly IMapper _mapper;
-    private readonly ILogger<UserController> _logger;
     private readonly ClaimsPrincipal _claimsPrincipal;
+    private readonly ILogger<UserController> _logger;
     private readonly string bnetUrl = "http://source/uploads/photos/";
     private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
     private readonly IUserService _userService;
