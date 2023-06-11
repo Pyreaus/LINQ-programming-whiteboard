@@ -4,36 +4,23 @@
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces(MediaTypeNames.Application.Json)]
 [Route("api/v1/[controller]")]
-public class EmployeeController : ControllerBase
+public partial class UserController : ControllerBase
 {
+    #region [Infrastructure]
     private readonly IMapper _mapper;
+    private readonly ILogger<UserController> _logger;
+    private readonly ClaimsPrincipal _claimsPrincipal;
     private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
-    private readonly ILogger<EmployeeController> _logger;
-    private readonly IEmployeeService _employeeService;
+    private readonly string bnetUrl = "http://source/uploads/photos/";
+    private readonly IUserService _userService;
+    public UserController(ClaimsPrincipal claimsPrincipal, ILogger<UserController> logger, IUserService userService, IMapper mapper)
+    {
+        (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? NullArg<IUserService>(userService!), logger, mapper, claimsPrincipal);
+    }
+    #endregion
 
-    public EmployeeController(IMapper mapper, ILogger<EmployeeController> logger, IEmployeeService empService)
-    {
-        (_employeeService, _mapper, _logger) = (empService ?? NullArg<IEmployeeService>(empService!), mapper, logger);
-    }
-    
     /// <summary>
-    /// GET: api/{version}/Employee/GetEmployees
-    /// </summary>
-    /// <response code="200">{employee view objects}</response>
-    /// <response code="404">missing employee objects</response>
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
-    [ActionName("GetEmployees"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
-    {
-        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
-        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
-        return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
-    }
-    
-    /// <summary>
-    /// GET: api/{version}/User/GetTraineesByReviewer/{id}
+    /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of reviwer</param>
     /// <response code="200">{trainee view objects}</response>
@@ -59,6 +46,44 @@ public class EmployeeController : ControllerBase
     }
 
     /// <summary>
+    /// POST: api/{version}/User/SetPair
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <param name="addReq">AddModifyTraineeReq DTO</param>
+    /// <response code="201">{ new trainee object }</response>
+    /// <response code="400">object not created</response>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("SetPair"),HttpPost("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    {
+        if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
+        Trainee? newTrainee = _userService.SetPair(pfid,_mapper.Map<AddModifyTraineeReq,Trainee>(addReq));
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(newTrainee!);
+        return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = newTrainee?.ReviewerPfid }, traineeVM);
+    }
+    
+    [Obsolete("Maintenance")]
+    /// <summary>
+    /// GET: api/{version}/Employee/GetEmployees
+    /// </summary>
+    /// <response code="200">{employee view objects}</response>
+    /// <response code="404">missing employee objects</response>
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
+    [ActionName("GetEmployees"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
+    {
+        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
+        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
+        return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
+    }
+    
+    [Obsolete("Maintenance")]
+    /// <summary>
     /// PUT: api/{version}/Employee/EditEmployee/{id}
     /// </summary>
     /// <param name="id">Guid of employee</param>
@@ -80,6 +105,7 @@ public class EmployeeController : ControllerBase
         return Ok(employeeVM);
     }
 
+    [Obsolete("Maintenance")]
     /// <summary>
     /// POST: api/{version}/Employee/AddEmployee
     /// </summary>
@@ -99,6 +125,7 @@ public class EmployeeController : ControllerBase
         return CreatedAtAction(nameof(GetEmployee), new { id = createdEmployee.Id }, employeeVM);
     }
 
+    [Obsolete("Maintenance")]
     /// <summary>
     /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
     /// </summary>
@@ -117,6 +144,7 @@ public class EmployeeController : ControllerBase
         return Ok(200);
     }
 
+    [Obsolete("Maintenance")]
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployee/{id}
     /// </summary>
