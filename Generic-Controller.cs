@@ -18,27 +18,6 @@ public partial class UserController : ControllerBase
         (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? NullArg<IUserService>(userService!), logger, mapper, claimsPrincipal);
     }
     #endregion
-
-    /// <summary>
-    /// PUT: api/{version}/User/SetPair/{pfid}
-    /// </summary>
-    /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">AddModifyTraineeReq DTO</param>
-    /// <response code="201">{ new trainee object }</response>
-    /// <response code="400">object not created</response>
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
-    {
-        if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
-        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
-        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
-        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
-        return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.ReviewerPfid }, traineeVM);
-    }
     
     /// <summary>
     /// GET: api/{version}/Employee/GetEmployees
@@ -80,6 +59,52 @@ public partial class UserController : ControllerBase
         EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(empEntry!);
         this._employeeService.UpdateEmployee(empEntry);
         return Ok(employeeVM);
+    }
+
+    /// <summary>
+    /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of reviwer</param>
+    /// <response code="200">{trainee view objects}</response>
+    /// <response code="404">missing trainee objects</response>
+    [Authorize(Policy="tracr-reviewer")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
+    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
+    {
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
+        IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
+            trainees.Where(
+                trainee => users.Any(
+                    user => user?.OtherPfid == trainee?.TraineePfid
+                )
+            ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
+        foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+        foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TraineePfid == user?.OtherPfid)!, trainee);
+        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
+    }
+
+    /// <summary>
+    /// PUT: api/{version}/User/SetPair/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <param name="addReq">AddModifyTraineeReq DTO</param>
+    /// <response code="201">{ new trainee object }</response>
+    /// <response code="400">object not created</response>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    {
+        if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
+        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
+        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
+        return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.ReviewerPfid }, traineeVM);
     }
     
     /// <summary>
