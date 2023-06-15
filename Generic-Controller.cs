@@ -89,7 +89,7 @@ public partial class UserController : ControllerBase
     /// <param name="modifyReq">AddModifyEmpReq DTO</param>
     /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
-       [Obsolete("Maintenance")]
+    [Obsolete("Maintenance")]
     //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
@@ -112,7 +112,7 @@ public partial class UserController : ControllerBase
     /// <param name="employeeReq">AddModifyEmpReq DTO</param>
     /// <response code="201">{employee view objects}</response>
     /// <response code="400">not created</response>
-       [Obsolete("Maintenance")]
+    [Obsolete("Maintenance")]
     //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
@@ -133,7 +133,7 @@ public partial class UserController : ControllerBase
     /// <param name="id">Guid of employee</param>
     /// <response code="204">invlaid id</response>
     /// <response code="200">deleted successfully</response>
-       [Obsolete("Maintenance")]
+    [Obsolete("Maintenance")]
     //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -153,7 +153,7 @@ public partial class UserController : ControllerBase
     /// <param name="id">Guid of employee</param>
     /// <response code="200">{employee view object}</response>
     /// <response code="204">invlaid id</response>
-       [Obsolete("Maintenance")]
+    [Obsolete("Maintenance")]
     //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
