@@ -36,30 +36,6 @@ public partial class UserController : ControllerBase
         IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
         return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
     }
-    
-    /// <summary>
-    /// PUT: api/{version}/Employee/EditEmployee/{id}
-    /// </summary>
-    /// <param name="id">Guid of employee</param>
-    /// <param name="modifyReq">AddModifyEmpReq DTO</param>
-    /// <response code="200">{employee view object}</response>
-    /// <response code="204">invlaid id</response>
-       [Obsolete("Maintenance")]
-    //--------------------------
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
-    public async Task<ActionResult<EmployeeViewModel?>> EditEmployee([FromRoute] Guid id, [FromBody] AddModifyEmpReq modifyReq)
-    {
-        Employee? empEntry = await _employeeService.GetEmployeeByIdAsync(id);
-        if ((empEntry is null) || (modifyReq is null)) return StatusCode(204);
-        _mapper.Map(modifyReq, empEntry);
-        EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(empEntry!);
-        this._employeeService.UpdateEmployee(empEntry);
-        return Ok(employeeVM);
-    }
 
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
@@ -105,6 +81,30 @@ public partial class UserController : ControllerBase
         _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.ReviewerPfid }, traineeVM);
+    }
+
+    /// <summary>
+    /// PUT: api/{version}/Employee/EditEmployee/{id}
+    /// </summary>
+    /// <param name="id">Guid of employee</param>
+    /// <param name="modifyReq">AddModifyEmpReq DTO</param>
+    /// <response code="200">{employee view object}</response>
+    /// <response code="204">invlaid id</response>
+       [Obsolete("Maintenance")]
+    //--------------------------
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
+    [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
+    public async Task<ActionResult<EmployeeViewModel?>> EditEmployee([FromRoute] Guid id, [FromBody] AddModifyEmpReq modifyReq)
+    {
+        Employee? empEntry = await _employeeService.GetEmployeeByIdAsync(id);
+        if ((empEntry is null) || (modifyReq is null)) return StatusCode(204);
+        _mapper.Map(modifyReq, empEntry);
+        EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(empEntry!);
+        this._employeeService.UpdateEmployee(empEntry);
+        return Ok(employeeVM);
     }
     
     /// <summary>
