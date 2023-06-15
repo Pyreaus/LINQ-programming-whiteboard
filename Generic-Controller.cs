@@ -24,7 +24,7 @@ public partial class UserController : ControllerBase
     /// </summary>
     /// <response code="200">{employee view objects}</response>
     /// <response code="404">missing employee objects</response>
-       [Obsolete("Maintenance")]
+    [Obsolete("Maintenance")]
     //--------------------------
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
