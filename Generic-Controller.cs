@@ -43,7 +43,7 @@ public partial class UserController : ControllerBase
     /// <param name="pfid">PFID of reviwer</param>
     /// <response code="200">{trainee view objects}</response>
     /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-reviewer")]
+    [Authorize(Policy="tracr-admin,tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
