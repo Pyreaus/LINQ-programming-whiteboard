@@ -69,7 +69,7 @@ public partial class UserController : ControllerBase
     /// <response code="201">{ new trainee object }</response>
     /// <response code="400">object not created</response>
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
+    [Authorize(Policy="tracr-admin,tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
     [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
