@@ -92,7 +92,11 @@ public partial class UserController : ControllerBase
     {
         IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
         IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
-        foreach(UserViewModel? rev in reviewersVM) rev!.Role = "reviewer";
+        foreach(UserViewModel? rev in reviewersVM) 
+        {
+            rev!.Role = "reviewer";
+            rev!.Photo = (bnetUrl + rev!.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+        }
         return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
     }
 
