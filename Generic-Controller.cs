@@ -40,10 +40,10 @@ public partial class UserController : ControllerBase
     /// <param name="pfid">PFID of trainee</param>
     /// <param name="addReq">AddModifyTraineeReq DTO</param>
     /// <response code="201">{ new trainee object }</response>
-    /// <response code="400">object not created</response>
-    /// <response code="500">operation failed</response>
-    [Authorize(Policy="tracr-admin")]
+    /// <response code="204">no content for arguments</response>
+    /// <response code="500">object not created</response>
     [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
@@ -51,7 +51,7 @@ public partial class UserController : ControllerBase
     public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
         Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
-        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(400);
+        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(204);
         _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
@@ -81,6 +81,23 @@ public partial class UserController : ControllerBase
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
         foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
         return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(500);
+    }
+
+    /// <summary>
+    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of diary objects</param>
+    /// <response code="200">{diary view objects}</response>
+    /// <response code="204">missing diary objects</response>
+    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
+    [ActionName("GetDiariesPfid"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid([FromRoute] [ValidPfid] int pfid)
+    {
+        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid);
+        IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
+        return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
     }
 
     /// <summary>
