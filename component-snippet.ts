@@ -22,8 +22,6 @@ export class HOMEComponent implements OnInit, AfterViewInit, AfterViewChecked {
   private graphComponentRef!: ComponentRef<GRAPHComponent>;
 
   step = 1;
-  statusColor = ['secondary','info'];
-  datefont = 'Segoe UI';
   user$!: User
   active!:string;
   activeItem: any;
