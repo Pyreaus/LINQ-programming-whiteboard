@@ -19,22 +19,19 @@ public partial class UserController : ControllerBase
     }
     #endregion
     
-    /// <summary>
-    /// GET: api/{version}/Employee/GetEmployees
+    //// <summary>
+    /// GET: api/{version}/Diary/GetSkills
     /// </summary>
-    /// <response code="200">{employee view objects}</response>
-    /// <response code="404">missing employee objects</response>
-    [Obsolete("Maintenance")]
-    //--------------------------
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<EmployeeViewModel>))]
-    [ActionName("GetEmployees"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<EmployeeViewModel>?>> GetEmployees()
+    /// <response code="200">{skill view objects}</response>
+    /// <response code="204">missing skill objects</response>
+    [Authorize(Policy="tracr-trainee//reviewer")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
+    [ActionName("GetSkills"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills()
     {
-        IEnumerable<Employee?> employees = await _employeeService.GetEmployeesAsync();
-        IEnumerable<EmployeeViewModel> employeesVM = _mapper.Map<IEnumerable<Employee?>, IEnumerable<EmployeeViewModel>>(employees!);
-        return (employees != null) && (typeof(List<Employee>) == employees.GetType()) ? Ok(employeesVM) : StatusCode(404);
+        IEnumerable<Skill?> skills = await _diaryService.GetSkills();
+        return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
 
     /// <summary>
