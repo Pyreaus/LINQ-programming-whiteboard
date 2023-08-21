@@ -18,7 +18,7 @@ public partial class UserController : ControllerBase
         (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? NullArg<IUserService>(userService!), logger, mapper, claimsPrincipal);
     }
     #endregion
-    
+
     //// <summary>
     /// GET: api/{version}/Diary/GetSkills
     /// </summary>
@@ -34,28 +34,54 @@ public partial class UserController : ControllerBase
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
     
+    /// <summary>
+    /// GET: api/{version}/User/GetUserReviewer
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <response code="200">{ reviewer view object }</response>
+    /// <response code="400">missing reviewer object</response>
+    /// <response code="500">operation failed</response>
+    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
+    [ActionName("GetUserReviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<UserViewModel?>> GetUserReviewer([FromRoute] [ValidPfid] int pfid)
+    {
+        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid);
+        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
+        PeopleFinderUser reviewer = reviewers.FirstOrDefault(user => user?.PFID.ToString() == trainee?.REVIEWER_PFID)!;
+        if ((reviewers is null)||(trainee is null)||(reviewer is null)) return StatusCode(400);
+        UserViewModel userVM = _mapper.Map<PeopleFinderUser?,UserViewModel>(reviewer);
+        userVM!.Role = "Reviewer";
+        userVM!.Photo = (bnetUrl + userVM.Photo?.ToString()) ?? "../../../assets/profilePic.png";    
+        return userVM != null ? Ok(userVM) : StatusCode(500);
+    }
 
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
-    /// <param name="pfid">trainee reviwer PFID</param>
+    // / <param name="pfid">trainee reviwer PFID</param>
     /// <response code="200">{trainee view objects}</response>
     /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-admin//tracr-reviewer")]
+    /// <response code="500">operation failed</response>
+    [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
     {
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
+        if ((users is null)||(trainees is null)) return StatusCode(404);
         IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
             trainees.Where(
-              trainee => users.Any(user => user?.PFID.ToString() == trainee?.TRAINEE_PFID)
+                trainee => users.Any(user => user?.PFID.ToString() == trainee?.TRAINEE_PFID)
             ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
         foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
-        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
+        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(500);
     }
 
     /// <summary>
