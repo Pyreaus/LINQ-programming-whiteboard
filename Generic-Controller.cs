@@ -35,6 +35,67 @@ public partial class UserController : ControllerBase
     }
 
     /// <summary>
+    /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
+    /// </summary>
+    /// <param name="pfid">trainee reviwer PFID</param>
+    /// <response code="200">{trainee view objects}</response>
+    /// <response code="404">missing trainee objects</response>
+    [Authorize(Policy="tracr-admin//reviewer")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
+    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
+    {
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
+        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
+        IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
+            trainees.Where(trainee => users.Any(user => user?.PFID.ToString() == trainee?.TRAINEE_PFID)
+            ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
+        foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+        foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
+        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
+    }
+
+    /// <summary>
+    /// POST: api/{version}/User/AssignTrainees/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <param name="addReq">AddModifyTraineeReq DTO</param>
+    /// <response code="201">{ new trainee object }</response>
+    /// <response code="400">object not created</response>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("AssignTrainees"),HttpPost("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> AssignTrainees([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    {
+        if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
+        Trainee? newTrainee = _mapper.Map<AddModifyTraineeReq,Trainee>(addReq!);
+        newTrainee.TRAINEE_PFID = pfid.ToString();
+        _userService.AssignTrainees(newTrainee);   
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(newTrainee!);
+        return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = newTrainee?.REVIEWER_PFID }, traineeVM);
+    }
+    
+    /// <summary>
+    /// GET: api/{version}/User/GetReviewers
+    /// </summary>
+    /// <response code="200">{reviewer view objects}</response>
+    /// <response code="404">missing reviewer objects</response>
+    [Authorize(Policy="tracr-admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
+    [ActionName("GetReviewers"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
+    {
+        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
+        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
+        foreach(UserViewModel? rev in reviewersVM) rev!.Role = "reviewer";
+        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
+    }
+
+    /// <summary>
     /// PUT: api/{version}/User/SetPair/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
@@ -53,69 +114,6 @@ public partial class UserController : ControllerBase
         _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.ReviewerPfid }, traineeVM);
-    }
-
-    /// <summary>
-    /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
-    /// </summary>
-    /// <param name="pfid">trainee reviwer PFID</param>
-    /// <response code="200">{trainee view objects}</response>
-    /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-admin//reviewer")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
-    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
-    {
-        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
-        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
-        IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
-            trainees.Where(
-                trainee => users.Any(
-                    user => user?.PFID.ToString() == trainee?.TRAINEE_PFID
-                )
-            ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
-        foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-        foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
-        return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
-    }
-    /// <summary>
-    /// GET: api/{version}/User/GetReviewers
-    /// </summary>
-    /// <response code="200">{reviewer view objects}</response>
-    /// <response code="404">missing reviewer objects</response>
-    [Authorize(Policy="tracr-admin")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
-    [ActionName("GetReviewers"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
-    {
-        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
-        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
-        foreach(UserViewModel? rev in reviewersVM) rev!.Role = "reviewer";
-        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
-    }
-    
-    /// <summary>
-    /// POST: api/{version}/User/AssignTrainees/{pfid}
-    /// </summary>
-    /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">AddModifyTraineeReq DTO</param>
-    /// <response code="201">{ new trainee object }</response>
-    /// <response code="400">object not created</response>
-    [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    // [Authorize(Policy="tracr-admin")]
-    [ActionName("AssignTrainees"),HttpPost("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> AssignTrainees([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
-    {
-        if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
-        Trainee? newTrainee = _mapper.Map<AddModifyTraineeReq,Trainee>(addReq!);
-        newTrainee.TRAINEE_PFID = pfid.ToString();
-        _userService.AssignTrainees(newTrainee);   
-        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(newTrainee!);
-        return CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = newTrainee?.REVIEWER_PFID }, traineeVM);
     }
 
     /// <summary>
