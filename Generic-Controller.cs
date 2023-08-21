@@ -35,27 +35,26 @@ public partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/{version}/User/GetUserReviewer
+    /// PUT: api/{version}/User/SetPair/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
-    /// <response code="200">{ reviewer view object }</response>
-    /// <response code="400">missing reviewer object</response>
+    /// <param name="addReq">AddModifyTraineeReq DTO</param>
+    /// <response code="201">{ new trainee object }</response>
+    /// <response code="400">object not created</response>
     /// <response code="500">operation failed</response>
-    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Policy="tracr-admin")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
-    [ActionName("GetUserReviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<UserViewModel?>> GetUserReviewer([FromRoute] [ValidPfid] int pfid)
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
-        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid);
-        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
-        PeopleFinderUser reviewer = reviewers.FirstOrDefault(user => user?.PFID.ToString() == trainee?.REVIEWER_PFID)!;
-        if ((reviewers is null)||(trainee is null)||(reviewer is null)) return StatusCode(400);
-        UserViewModel userVM = _mapper.Map<PeopleFinderUser?,UserViewModel>(reviewer);
-        userVM!.Role = "Reviewer";
-        userVM!.Photo = (bnetUrl + userVM.Photo?.ToString()) ?? "../../../assets/profilePic.png";    
-        return userVM != null ? Ok(userVM) : StatusCode(500);
+        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
+        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(400);
+        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
+        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
     }
 
     /// <summary>
@@ -85,26 +84,26 @@ public partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// PUT: api/{version}/User/SetPair/{pfid}
+    /// GET: api/{version}/User/GetUserReviewer
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">AddModifyTraineeReq DTO</param>
-    /// <response code="201">{ new trainee object }</response>
-    /// <response code="400">object not created</response>
+    /// <response code="200">{ reviewer view object }</response>
+    /// <response code="400">missing reviewer object</response>
     /// <response code="500">operation failed</response>
-    [Authorize(Policy="tracr-admin")]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
+    [ActionName("GetUserReviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<UserViewModel?>> GetUserReviewer([FromRoute] [ValidPfid] int pfid)
     {
-        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
-        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(400);
-        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
-        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
-        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
+        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid);
+        PeopleFinderUser? reviewer = await _userService.ReviewerByTraineeAsync(pfid);
+        if ((trainee is null)||(reviewer is null)) return StatusCode(400);
+        UserViewModel userVM = _mapper.Map<PeopleFinderUser?,UserViewModel>(reviewer);
+        userVM!.Role = "Reviewer";
+        userVM!.Photo = (bnetUrl + userVM.Photo?.ToString()) ?? "../../../assets/profilePic.png";    
+        return userVM != null ? Ok(userVM) : StatusCode(500);
     }
 
     /// <summary>
