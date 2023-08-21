@@ -58,24 +58,25 @@ public partial class UserController : ControllerBase
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
-    /// <param name="pfid">PFID of reviwer</param>
+    /// <param name="pfid">trainee reviwer PFID</param>
     /// <response code="200">{trainee view objects}</response>
     /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-admin, tracr-reviewer")]
+    // [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<TraineeViewModel>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
+    public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
     {
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
         IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid);
         IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
-            trainees.Where(trainee => users.Any(
-                user => user?.OtherPfid == trainee?.TraineePfid
-            )
-        ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
+            trainees.Where(
+                trainee => users.Any(
+                    user => user?.PFID.ToString() == trainee?.TRAINEE_PFID
+                )
+            ).OfType<Trainee>().ToList()!).OfType<TraineeViewModel>().ToList();
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-        foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TraineePfid == user?.OtherPfid)!, trainee);
+        foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
         return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(404);
     }
 
