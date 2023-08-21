@@ -24,7 +24,7 @@ public partial class UserController : ControllerBase
     /// </summary>
     /// <response code="200">{skill view objects}</response>
     /// <response code="204">missing skill objects</response>
-    [Authorize(Policy="tracr-trainee//reviewer")]
+    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
     [ActionName("GetSkills"),HttpGet("[action]")]
@@ -40,7 +40,7 @@ public partial class UserController : ControllerBase
     /// <param name="pfid">trainee reviwer PFID</param>
     /// <response code="200">{trainee view objects}</response>
     /// <response code="404">missing trainee objects</response>
-    [Authorize(Policy="tracr-admin//reviewer")]
+    [Authorize(Policy="tracr-admin//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
@@ -104,7 +104,7 @@ public partial class UserController : ControllerBase
     /// <response code="201">{ new trainee object }</response>
     /// <response code="400">object not created</response>
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin//reviewer")]
+    [Authorize(Policy="tracr-admin//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
     [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
@@ -125,7 +125,7 @@ public partial class UserController : ControllerBase
     /// <response code="200">{AddModifyTraineeReq DTO}</response>
     /// <response code="400">object not modified</response>
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin//reviewer")]
+    [Authorize(Policy="tracr-admin//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(TraineeViewModel))]
     [ActionName("EditTrainee"),HttpPut("[action]/{pfid:int}")]
