@@ -1,6 +1,7 @@
 namespace Bristows.TRACR.DAL.Infrastructure
 {
-    public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() where TR : DbContext
+    public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
+                                                             where TR : DbContext
     {
         #region [infrastructure]
         private TR? _localContext;
