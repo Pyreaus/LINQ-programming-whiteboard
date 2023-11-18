@@ -19,11 +19,11 @@ public sealed partial class UserController : ControllerBase
     }
     #endregion
     
-    //// <summary>
+    /// <summary>
     /// GET: api/{version}/Diary/GetSkills
     /// </summary>
-    /// <response code="200">{skill view objects}</response>
-    /// <response code="204">missing skill objects</response>
+    /// <response code="200"><see cref="IEnumerable{Skill}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{Skill}"/> objects not found</response>
     [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
@@ -38,8 +38,8 @@ public sealed partial class UserController : ControllerBase
     /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of diary objects</param>
-    /// <response code="200">{diary view objects}</response>
-    /// <response code="204">missing diary objects</response>
+    /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{DiaryViewModel}"/> objects not found</response>
     [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
@@ -54,10 +54,10 @@ public sealed partial class UserController : ControllerBase
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
-    // / <param name="pfid">trainee reviwer PFID</param>
-    /// <response code="200">{trainee view objects}</response>
-    /// <response code="404">missing trainee objects</response>
-    /// <response code="500">operation failed</response>
+    /// <param name="pfid">trainee reviwer PFID</param>
+    /// <response code="500">internal error</response>
+    /// <response code="404"><see cref="IEnumerable{TraineeViewModel}"/> objects not found</response>
+    /// <response code="200"><see cref="IEnumerable{TraineeViewModel}"/> objects</response>
     [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -81,10 +81,10 @@ public sealed partial class UserController : ControllerBase
     /// PUT: api/{version}/User/SetPair/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">AddModifyTraineeReq DTO</param>
-    /// <response code="201">{ new trainee object }</response>
-    /// <response code="204">no content for arguments</response>
-    /// <response code="500">object not created</response>
+    /// <param name="addReq">request DTO</param>
+    /// <response code="500">internal error</response>
+    /// <response code="400"><see cref="Trainee"/> not modified</response>
+    /// <response code="201"><see cref="Trainee"/> modified</response>
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -104,9 +104,9 @@ public sealed partial class UserController : ControllerBase
     /// GET: api/{version}/User/GetUserReviewer
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
-    /// <response code="200">{ reviewer view object }</response>
-    /// <response code="400">missing reviewer object</response>
-    /// <response code="500">operation failed</response>
+    /// <response code="500">internal error</response>
+    /// <response code="200"><see cref="UserViewModel"/> object</response>
+    /// <response code="400"><see cref="UserViewModel"/> object not found</response>
     [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -126,8 +126,8 @@ public sealed partial class UserController : ControllerBase
     /// <summary>
     /// GET: api/{version}/User/GetReviewers
     /// </summary>
-    /// <response code="200">{reviewer view objects}</response>
-    /// <response code="404">missing reviewer objects</response>
+    /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
     [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
@@ -147,11 +147,11 @@ public sealed partial class UserController : ControllerBase
     /// <summary>
     /// POST: api/{version}/User/AssignTrainees/{pfid}
     /// </summary>
+    /// <param name="addReq">request DTO</param>
     /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">AddModifyTraineeReq DTO</param>
-    /// <response code="201">{ new trainee object }</response>
-    /// <response code="400">object not created</response>
-    /// <response code="500">operation failed</response>
+    /// <response code="500">internal error</response>
+    /// <response code="201"><see cref="TraineeViewModel"/> object</response>
+    /// <response code="400"><see cref="TraineeViewModel"/> object not created</response>
     [Authorize(Policy="tracr-admin")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -172,9 +172,9 @@ public sealed partial class UserController : ControllerBase
     /// PUT: api/{version}/User/EditTrainee/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
-    /// <param name="modifyReq">AddModifyTraineeReq DTO</param>
-    /// <response code="200">{AddModifyTraineeReq DTO}</response>
-    /// <response code="400">object not modified</response>
+    /// <param name="modifyReq">request DTO</param>
+    /// <response code="200"><see cref="AddModifyTraineeReq"/> object modified</response>
+    /// <response code="400"><see cref="Trainee"/> object not modified</response>
     [Consumes(MediaTypeNames.Application.Json)]
     [Authorize(Policy="tracr-admin//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -192,8 +192,9 @@ public sealed partial class UserController : ControllerBase
     /// <summary>
     /// GET: api/{version}/User/GetUserType
     /// </summary>
-    /// <response code="200">{user view objects}</response>
+    /// <response code="500">internal error</response>
     /// <response code="511">unauthorized client</response>
+    /// <response code="200"><see cref="UserViewModel"/> object</response>
     [ProducesResponseType(StatusCodes.Status511NetworkAuthenticationRequired)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
     [ActionName("GetUserType"),HttpGet("[action]")]
