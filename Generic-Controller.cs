@@ -4,7 +4,7 @@
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces(MediaTypeNames.Application.Json)]
 [Route("api/v1/[controller]")]
-public sealed partial class UserController : ControllerBase
+internal sealed partial class UserController : ControllerBase
 {
     #region [Infrastructure]
     private readonly IMapper _mapper;
