@@ -18,6 +18,23 @@ namespace Bristows.TRACR.DAL.Infrastructure
             (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>>(logger!));
         }
         #region [implementation]
+        public virtual async Task<IEnumerable<TE?>> GetManyAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TE> query = _dbSet;
+            if (disableTracking) query = query.AsNoTracking();
+            if (include != null) query = include(query);
+            return await query.Where(predicate).ToListAsync();
+        }
+        public virtual async Task<bool> AnyAsync(Expression<Func<TE, bool>> predicate) => await _dbSet.AnyAsync(predicate);
+        public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
+        public virtual IEnumerable<TE?> GetAll(Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
+        {
+            IQueryable<TE> query = _dbSet;
+            if (disableTracking) query = query.AsNoTracking();
+            if (include != null) query = include(query);
+            return query.ToList().AsEnumerable();
+        }
+        //
         public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
         public virtual IQueryable<TE?> GetAllAsQueryable(Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
         {
