@@ -18,12 +18,12 @@ public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new()
     }
     #region [implementation]
     public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
-    public virtual async Task<IEnumerable<TE?>> GetManyAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
+    public virtual IEnumerable<TE?> GetMany(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
     {
         IQueryable<TE> query = _dbSet;
         if (disableTracking) query = query.AsNoTracking();
         if (include != null) query = include(query);
-        return await query.Where(predicate).ToListAsync();
+        return query.Where(predicate).ToList();
     }
     public virtual async Task<bool> AnyAsync(Expression<Func<TE, bool>> predicate) => await _dbSet.AnyAsync(predicate);
     public virtual IEnumerable<TE?> GetAll(Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
@@ -60,6 +60,13 @@ public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new()
         IQueryable<TE> query = _dbSet;
         if (disableTracking) query = query.AsNoTracking();
         return include != null ? include(query) : query;
+    }
+    public virtual async Task<IEnumerable<TE?>> GetManyAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
+    {
+        IQueryable<TE> query = _dbSet;
+        if (disableTracking) query = query.AsNoTracking();
+        if (include != null) query = include(query);
+        return await query.Where(predicate).ToListAsync();
     }
     public virtual async Task<TE?> FirstOrDefaultAsync(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
     {
