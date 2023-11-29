@@ -58,41 +58,23 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
+    /// GET: api/{version}/User/GetReviewers
     /// </summary>
-    /// <param name="pfid">PFID of diary objects</param>
-    /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
-    /// <response code="204"><see cref="IEnumerable{DiaryViewModel}"/> objects not found</response>
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
-    [ActionName("GetDiariesPfid"),Authorize(Policy="trainee//reviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid([FromRoute] [ValidPfid] int pfid)
+    /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
+    [ActionName("GetReviewers"),Authorize(Policy="admin"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
     {
-        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid);
-        IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
-        return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
-    }
-
-    /// <summary>
-    /// PUT: api/{version}/User/SetPair/{pfid}
-    /// </summary>
-    /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">request DTO</param>
-    /// <response code="500">internal error</response>
-    /// <response code="400"><see cref="Trainee"/> not modified</response>
-    /// <response code="201"><see cref="Trainee"/> modified</response>
-    [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("SetPair"),Authorize(Policy="admin"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
-    {
-        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
-        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(204);
-        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
-        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
-        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
+        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
+        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
+        foreach(UserViewModel? rev in reviewersVM) 
+        {
+            rev!.Role = "reviewer";
+            rev!.Photo = (bnetUrl + rev!.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+        }
+        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
     }
     
     /// <summary>
@@ -129,6 +111,44 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
+    /// PUT: api/{version}/User/SetPair/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <param name="addReq">request DTO</param>
+    /// <response code="500">internal error</response>
+    /// <response code="400"><see cref="Trainee"/> not modified</response>
+    /// <response code="201"><see cref="Trainee"/> modified</response>
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("SetPair"),Authorize(Policy="admin"),HttpPut("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    {
+        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
+        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid) is null)) return StatusCode(204);
+        _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
+        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
+    }
+    
+    /// <summary>
+    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of diary objects</param>
+    /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{DiaryViewModel}"/> objects not found</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
+    [ActionName("GetDiariesPfid"),Authorize(Policy="trainee//reviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid([FromRoute] [ValidPfid] int pfid)
+    {
+        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid);
+        IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
+        return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
+    }
+
+    /// <summary>
     /// GET: api/{version}/User/GetUserReviewer
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
@@ -150,25 +170,6 @@ public sealed partial class UserController : ControllerBase
         return userVM != null ? Ok(userVM) : StatusCode(500);
     }
 
-    /// <summary>
-    /// GET: api/{version}/User/GetReviewers
-    /// </summary>
-    /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
-    /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
-    [ActionName("GetReviewers"),Authorize(Policy="admin"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
-    {
-        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
-        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
-        foreach(UserViewModel? rev in reviewersVM) 
-        {
-            rev!.Role = "reviewer";
-            rev!.Photo = (bnetUrl + rev!.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-        }
-        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
-    }
 
     /// <summary>
     /// POST: api/{version}/User/AssignTrainees/{pfid}
