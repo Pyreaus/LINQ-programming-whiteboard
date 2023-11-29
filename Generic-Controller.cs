@@ -95,6 +95,39 @@ public sealed partial class UserController : ControllerBase
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
     }
+    
+    /// <summary>
+    /// GET: api/{version}/User/GetUserType
+    /// </summary>
+    /// <response code="500">internal error</response>
+    /// <response code="511">unauthorized client</response>
+    /// <response code="200"><see cref="UserViewModel"/> object</response>
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status511NetworkAuthenticationRequired)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
+    [ActionName("GetUserType"),HttpGet("[action]")]
+    public async Task<ActionResult<UserViewModel?>> GetUserType([FromServices] IWebHostEnvironment webHostEnvironment)
+    {
+        IWebHostEnvironment env = webHostEnvironment ?? NullArg<IWebHostEnvironment>(webHostEnvironment!);
+        if (_claimsPrincipal.Identity?.IsAuthenticated == true)
+        {
+            Claim? usernameClaim = _claimsPrincipal.FindFirst("DomainUsername");
+            if (usernameClaim?.Value != null)
+            {
+                PeopleFinderUser? user = await _userService.GetByDomainAsync(usernameClaim.Value);
+                if (user != null && user?.PFID != null)
+                {
+                    string? role = await _userService.GetRoleByPfidAsync((int)user.PFID);
+                    UserViewModel? userVM = role != null ? _mapper.Map<PeopleFinderUser,UserViewModel>(user) : null;
+                    userVM!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+                    userVM!.Role = role ?? "Unauthorized";
+                    return userVM != null ? Ok(userVM) : StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
+                }
+                return StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
+            }
+         }
+        return env.IsDevelopment() ? throw new Exception() : StatusCode(StatusCodes.Status500InternalServerError);
+    }
 
     /// <summary>
     /// GET: api/{version}/User/GetUserReviewer
@@ -179,38 +212,6 @@ public sealed partial class UserController : ControllerBase
         _mapper.Map<AddModifyTraineeReq?,Trainee>(modifyReq, trainee);
         this._userService.UpdateTrainee(trainee);
         return StatusCode(200);
-    }
-
-    /// <summary>
-    /// GET: api/{version}/User/GetUserType
-    /// </summary>
-    /// <response code="500">internal error</response>
-    /// <response code="511">unauthorized client</response>
-    /// <response code="200"><see cref="UserViewModel"/> object</response>
-    [ProducesResponseType(StatusCodes.Status511NetworkAuthenticationRequired)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
-    [ActionName("GetUserType"),HttpGet("[action]")]
-    public async Task<ActionResult<UserViewModel?>> GetUserType([FromServices] IWebHostEnvironment webHostEnvironment)
-    {
-        IWebHostEnvironment env = webHostEnvironment ?? NullArg<IWebHostEnvironment>(webHostEnvironment!);
-        if (_claimsPrincipal.Identity?.IsAuthenticated == true)
-        {
-            Claim? usernameClaim = _claimsPrincipal.FindFirst("DomainUsername");
-            if (usernameClaim?.Value != null)
-            {
-                PeopleFinderUser? user = await _userService.GetByDomainAsync(usernameClaim.Value);
-                if (user != null && user?.PFID != null)
-                {
-                    string? role = await _userService.GetRoleByPfidAsync((int)user.PFID);
-                    UserViewModel? userVM = role != null ? _mapper.Map<PeopleFinderUser,UserViewModel>(user) : null;
-                    userVM!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-                    userVM!.Role = role ?? "Unauthorized";
-                    return userVM != null ? Ok(userVM) : StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
-                }
-                return StatusCode(StatusCodes.Status511NetworkAuthenticationRequired);
-            }
-         }
-        return env.IsDevelopment() ? throw new Exception() : StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     /// <summary>
