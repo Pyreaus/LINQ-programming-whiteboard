@@ -18,39 +18,20 @@ public sealed partial class UserController : ControllerBase
         (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? NullArg<IUserService>(userService!), logger, mapper, claimsPrincipal);
     }
     #endregion
-    
+
     /// <summary>
     /// GET: api/{version}/Diary/GetSkills
     /// </summary>
     /// <response code="200"><see cref="IEnumerable{Skill}"/> objects</response>
     /// <response code="204"><see cref="IEnumerable{Skill}"/> objects not found</response>
-    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
-    [ActionName("GetSkills"),HttpGet("[action]")]
+    [ActionName("GetSkills"),Authorize(Policy="tracr-trainee//tracr-reviewer"),HttpGet("[action]")]
     public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills()
     {
         IEnumerable<Skill?> skills = await _diaryService.GetSkills();
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
-
-    /// <summary>
-    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
-    /// </summary>
-    /// <param name="pfid">PFID of diary objects</param>
-    /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
-    /// <response code="204"><see cref="IEnumerable{DiaryViewModel}"/> objects not found</response>
-    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
-    [ActionName("GetDiariesPfid"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid([FromRoute] [ValidPfid] int pfid)
-    {
-        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid);
-        IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
-        return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
-    }
-
     /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
@@ -58,11 +39,10 @@ public sealed partial class UserController : ControllerBase
     /// <response code="500">internal error</response>
     /// <response code="404"><see cref="IEnumerable{TraineeViewModel}"/> objects not found</response>
     /// <response code="200"><see cref="IEnumerable{TraineeViewModel}"/> objects</response>
-    [Authorize(Policy="tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
-    [ActionName("GetTraineesByReviewer"),HttpGet("[action]/{pfid:int}")]
+    [ActionName("GetTraineesByReviewer"),Authorize(Policy="tracr-reviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer([FromRoute] [ValidPfid] int pfid)
     {
         IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync();
@@ -78,6 +58,22 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
+    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
+    /// </summary>
+    /// <param name="pfid">PFID of diary objects</param>
+    /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{DiaryViewModel}"/> objects not found</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
+    [ActionName("GetDiariesPfid"),Authorize(Policy="tracr-trainee//tracr-reviewer"),HttpGet("[action]/{pfid:int}")]
+    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid([FromRoute] [ValidPfid] int pfid)
+    {
+        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid);
+        IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
+        return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
+    }
+
+    /// <summary>
     /// PUT: api/{version}/User/SetPair/{pfid}
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
@@ -86,11 +82,10 @@ public sealed partial class UserController : ControllerBase
     /// <response code="400"><see cref="Trainee"/> not modified</response>
     /// <response code="201"><see cref="Trainee"/> modified</response>
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("SetPair"),HttpPut("[action]/{pfid:int}")]
+    [ActionName("SetPair"),Authorize(Policy="tracr-admin"),HttpPut("[action]/{pfid:int}")]
     public async Task<ActionResult<TraineeViewModel>?> SetPair([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
         Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid);
@@ -107,11 +102,10 @@ public sealed partial class UserController : ControllerBase
     /// <response code="500">internal error</response>
     /// <response code="200"><see cref="UserViewModel"/> object</response>
     /// <response code="400"><see cref="UserViewModel"/> object not found</response>
-    [Authorize(Policy="tracr-trainee//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
-    [ActionName("GetUserReviewer"),HttpGet("[action]/{pfid:int}")]
+    [ActionName("GetUserReviewer"),Authorize(Policy="tracr-trainee//tracr-reviewer"),HttpGet("[action]/{pfid:int}")]
     public async Task<ActionResult<UserViewModel?>> GetUserReviewer([FromRoute] [ValidPfid] int pfid)
     {
         Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid);
@@ -128,10 +122,9 @@ public sealed partial class UserController : ControllerBase
     /// </summary>
     /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
     /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
-    [ActionName("GetReviewers"),HttpGet("[action]")]
+    [ActionName("GetReviewers"),Authorize(Policy="tracr-admin"),HttpGet("[action]")]
     public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
     {
         IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
@@ -152,12 +145,11 @@ public sealed partial class UserController : ControllerBase
     /// <response code="500">internal error</response>
     /// <response code="201"><see cref="TraineeViewModel"/> object</response>
     /// <response code="400"><see cref="TraineeViewModel"/> object not created</response>
-    [Authorize(Policy="tracr-admin")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("AssignTrainees"),HttpPost("[action]/{pfid:int}")]
+    [ActionName("AssignTrainees"),Authorize(Policy="tracr-admin"),HttpPost("[action]/{pfid:int}")]
     public async Task<ActionResult<TraineeViewModel?>> AssignTrainees([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
         if ((await _userService.GetPFUserAsync(pfid) is null)||(addReq is null)) return StatusCode(400);
@@ -176,10 +168,9 @@ public sealed partial class UserController : ControllerBase
     /// <response code="200"><see cref="AddModifyTraineeReq"/> object modified</response>
     /// <response code="400"><see cref="Trainee"/> object not modified</response>
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin//tracr-reviewer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(TraineeViewModel))]
-    [ActionName("EditTrainee"),HttpPut("[action]/{pfid:int}")]
+    [ActionName("EditTrainee"),Authorize(Policy="tracr-admin//tracr-reviewer"),HttpPut("[action]/{pfid:int}")]
     public async Task<ActionResult<TraineeViewModel?>> EditTrainee([FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq modifyReq)
     {
         Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid);
@@ -231,10 +222,9 @@ public sealed partial class UserController : ControllerBase
     [Obsolete("Maintenance")]
     //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("EditEmployee"),HttpPut("[action]/{id:guid}")]
+    [ActionName("EditEmployee"),Authorize(Policy="tracr-admin"),HttpPut("[action]/{id:guid}")]
     public async Task<ActionResult<EmployeeViewModel?>> EditEmployee([FromRoute] Guid id, [FromBody] AddModifyEmpReq modifyReq)
     {
         Employee? empEntry = await _employeeService.GetEmployeeByIdAsync(id);
@@ -254,10 +244,9 @@ public sealed partial class UserController : ControllerBase
     [Obsolete("Maintenance")]
     //--------------------------
     [Consumes(MediaTypeNames.Application.Json)]
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
-    [ActionName("AddEmployee"),HttpPost("[action]")]
+    [ActionName("AddEmployee"),Authorize(Policy="tracr-admin"),HttpPost("[action]")]
     public ActionResult<EmployeeViewModel?> AddEmployee([FromBody] AddModifyEmpReq employeeReq)
     {
         if (employeeReq is null) return BadRequest(employeeReq);
@@ -274,10 +263,9 @@ public sealed partial class UserController : ControllerBase
     /// <response code="200">deleted successfully</response>
     [Obsolete("Maintenance")]
     //--------------------------
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ActionName("DeleteEmployee"),HttpDelete("[action]/{id:guid}")]
+    [ActionName("DeleteEmployee"),[Authorize(Policy="tracr-admin"),HttpDelete("[action]/{id:guid}")]
     public async Task<IActionResult> DeleteEmployee([FromRoute] Guid id)
     {
         if (await _employeeService.GetEmployeeByIdAsync(id) is null) return StatusCode(204);
@@ -294,10 +282,9 @@ public sealed partial class UserController : ControllerBase
     /// <response code="204">invlaid id</response>
     [Obsolete("Maintenance")]
     //--------------------------
-    [Authorize(Policy="tracr-admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
-    [ActionName("GetEmployee"),HttpGet("[action]/{id:guid}")]
+    [ActionName("GetEmployee"),Authorize(Policy="tracr-admin"),HttpGet("[action]/{id:guid}")]
     public async Task<ActionResult<EmployeeViewModel?>> GetEmployee([FromRoute] Guid id)
     {
         Employee? employee = await _employeeService.GetEmployeeByIdAsync(id);
