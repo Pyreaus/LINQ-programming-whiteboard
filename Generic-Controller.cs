@@ -20,19 +20,6 @@ public sealed partial class UserController : ControllerBase
     #endregion
 
     /// <summary>
-    /// GET: api/{version}/Diary/GetSkills
-    /// </summary>
-    /// <response code="200"><see cref="IEnumerable{Skill}"/> objects</response>
-    /// <response code="204"><see cref="IEnumerable{Skill}"/> objects not found</response>
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
-    [ActionName("GetSkills"),Authorize(Policy="tracr-trainee//tracr-reviewer"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills()
-    {
-        IEnumerable<Skill?> skills = await _diaryService.GetSkills();
-        return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
-    }
-    /// <summary>
     /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
     /// </summary>
     /// <param name="pfid">trainee reviwer PFID</param>
@@ -55,6 +42,20 @@ public sealed partial class UserController : ControllerBase
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
         foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
         return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(500);
+    }
+
+    /// <summary>
+    /// GET: api/{version}/Diary/GetSkills
+    /// </summary>
+    /// <response code="200"><see cref="IEnumerable{Skill}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{Skill}"/> objects not found</response>
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
+    [ActionName("GetSkills"),Authorize(Policy="tracr-trainee//tracr-reviewer"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills()
+    {
+        IEnumerable<Skill?> skills = await _diaryService.GetSkills();
+        return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
 
     /// <summary>
