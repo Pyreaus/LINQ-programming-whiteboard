@@ -1,4 +1,4 @@
-namespace Backend.TRACR.DAL.Infrastructure;
+namespace NoelsWhiteboard.TRACR.DAL.Infrastructure;
 public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
                                                          where TR : DbContext
 {
