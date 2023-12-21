@@ -1,4 +1,4 @@
-namespace Bristows.TRACR.API.AuthenticationTemplate;
+namespace [namespace];
 internal sealed class JwtProvider : IJwtProvider
 {
     private readonly IConfiguration _config;
@@ -36,19 +36,37 @@ internal sealed class JwtProvider : IJwtProvider
 
 
 // in the same assembly
-public interface IJwtProvider
+namespace [namespace];
+internal sealed class JwtOptionsSetup : IConfigureOptions<JwtOptions>
 {
-    public string BuildToken(User user);
+    private readonly IConfiguration _config;
+    private readonly string _sectionName;
+    public JwtOptionsSetup(IConfiguration config, string sectionName = "AppSettings:Jwt")
+    {
+        (_config,_sectionName) = (config, sectionName);
+    }
+    public void Configure(JwtOptions options)
+    {
+        _config.GetSection(_sectionName).Bind(options);
+        
+    }
 }
+namespace [namespace];
 public class User
 {
     public string Email { get; internal init; }
     public string Id { get; internal init; }
     public object? Value { get; internal init; }
 }
+namespace [namespace];
 internal sealed class JwtOptions
 {
     public string SigningKey { get; internal init; }
     public string Issuer { get; internal init; }
     public string Audience { get; internal init; }
+}
+namespace [namespace];
+public interface IJwtProvider
+{
+    public string BuildToken(User user);
 }
