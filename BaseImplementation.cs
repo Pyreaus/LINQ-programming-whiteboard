@@ -1,4 +1,4 @@
-namespace Bristows.TRACR.DAL.Infrastructure;
+namespace Backend.TRACR.DAL.Infrastructure;
 public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
                                                          where TR : DbContext
 {
