@@ -34,8 +34,7 @@ internal sealed class JwtProvider : IJwtProvider
     }
 }
 
-
-// in the same assembly
+// in the same assembly:
 namespace [namespace];
 internal sealed class JwtOptionsSetup : IConfigureOptions<JwtOptions>
 {
