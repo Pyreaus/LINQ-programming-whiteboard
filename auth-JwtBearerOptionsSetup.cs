@@ -1,18 +1,18 @@
 namespace [namespace];
 internal sealed class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
 {
-    public JwtOptions _optionsVal;
-    public JwtBearerOptionsSetup(IOptions<JwtOptions> options) => _optionsVal = options.Value;
+    public IOptions<JwtOptions> _options;
+    public JwtBearerOptionsSetup(IOptions<JwtOptions> options) => _options = options;
     public void Configure(JwtBearerOptions options)
     {
         options.TokenValidationParameters = new()
         {
             ClockSkew = new TimeSpan(0, 0, 30),
-            ValidateIssuer = true, ValidIssuer = _optionsVal.Issuer,
-            ValidateAudience = true, ValidAudience = _optionsVal.Audience,
+            ValidateIssuer = true, ValidIssuer = _options.Value.Issuer,
+            ValidateAudience = true, ValidAudience = _options.Value.Audience,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_optionsVal.SigningKey.ToCharArray()))
+                Encoding.UTF8.GetBytes(_options.Value.SigningKey.ToCharArray()))
         };
         options.Events = new JwtBearerEvents()
         {
