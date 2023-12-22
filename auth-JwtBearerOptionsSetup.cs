@@ -1,5 +1,5 @@
 namespace [namespace];
-internal sealed class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
+internal sealed partial class JwtBearerOptionsSetup : IConfigureOptions<JwtBearerOptions>
 {
     public IOptions<JwtOptions> _options;
     public JwtBearerOptionsSetup(IOptions<JwtOptions> options) => _options = options;
