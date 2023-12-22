@@ -1,5 +1,4 @@
-                   //[..] imports & namespace ^
-[ApiController]                     
+[ApiController]  //[..] imports & namespace ^                 
 [Authorize(Policy="tracr-default",AuthenticationSchemes=NegotiateDefaults.AuthenticationScheme)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces(MediaTypeNames.Application.Json)]
@@ -20,7 +19,7 @@ public sealed partial class UserController : ControllerBase
     #endregion
 
     /// <summary>
-    /// GET: api/{version}/Diary/GetSkills
+    /// GET: {{host}}/api/{{version}}/Diary/GetSkills
     /// </summary>
     /// <response code="200"><see cref="IEnumerable{Skill}"/> objects</response>
     /// <response code="204"><see cref="IEnumerable{Skill}"/> objects not found</response>
@@ -33,7 +32,7 @@ public sealed partial class UserController : ControllerBase
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
     /// <summary>
-    /// GET: api/{version}/User/GetTraineesByReviewer/{pfid}
+    /// GET: {{host}}/api/{{version}}/User/GetTraineesByReviewer/[pfid]
     /// </summary>
     /// <param name="pfid">trainee reviwer PFID</param>
     /// <response code="500">internal error</response>
@@ -58,7 +57,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/{version}/User/GetReviewers
+    /// GET: {{host}}/api/{{version}}/User/GetReviewers
     /// </summary>
     /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
     /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
@@ -78,7 +77,7 @@ public sealed partial class UserController : ControllerBase
     }
     
     /// <summary>
-    /// GET: api/{version}/User/GetUserType
+    /// GET: {{host}}/api/{{version}}/User/GetUserType
     /// </summary>
     /// <response code="500">internal error</response>
     /// <response code="511">unauthorized client</response>
@@ -111,7 +110,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// PUT: api/{version}/User/SetPair/{pfid}
+    /// PUT: {{host}}/api/{{version}}/User/SetPair/[pfid]
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
     /// <param name="addReq">request DTO</param>
@@ -133,7 +132,7 @@ public sealed partial class UserController : ControllerBase
     }
     
     /// <summary>
-    /// GET: api/{version}/Diary/GetDiariesPfid/{pfid}
+    /// GET: {{host}}/api/{{version}}/Diary/GetDiariesPfid/[pfid]
     /// </summary>
     /// <param name="pfid">PFID of diary objects</param>
     /// <response code="200"><see cref="IEnumerable{DiaryViewModel}"/> objects</response>
@@ -149,7 +148,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/{version}/User/GetUserReviewer
+    /// GET: {{host}}/api/{{version}}/User/GetUserReviewer
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
     /// <response code="500">internal error</response>
@@ -172,7 +171,7 @@ public sealed partial class UserController : ControllerBase
 
 
     /// <summary>
-    /// POST: api/{version}/User/AssignTrainees/{pfid}
+    /// POST: {{host}}/api/{{version}}/User/AssignTrainees/[pfid]
     /// </summary>
     /// <param name="addReq">request DTO</param>
     /// <param name="pfid">PFID of trainee</param>
@@ -195,7 +194,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// PUT: api/{version}/User/EditTrainee/{pfid}
+    /// PUT: {{host}}/api/{{version}}/User/EditTrainee/[pfid]
     /// </summary>
     /// <param name="pfid">PFID of trainee</param>
     /// <param name="modifyReq">request DTO</param>
@@ -215,7 +214,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// PUT: api/{version}/Employee/EditEmployee/{id}
+    /// PUT: {{host}}/api/{{version}}/Employee/EditEmployee/[id]
     /// </summary>
     /// <param name="id">Guid of employee</param>
     /// <param name="modifyReq">AddModifyEmpReq DTO</param>
@@ -238,7 +237,7 @@ public sealed partial class UserController : ControllerBase
     }
     
     /// <summary>
-    /// POST: api/{version}/Employee/AddEmployee
+    /// POST: {{host}}/api/{{version}}/Employee/AddEmployee
     /// </summary>
     /// <param name="employeeReq">AddModifyEmpReq DTO</param>
     /// <response code="201">{employee view objects}</response>
@@ -258,7 +257,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// DELETE: api/{version}/Employee/DeleteEmployee/{id}
+    /// DELETE: {{host}}/api/{{version}}/Employee/DeleteEmployee/[id]
     /// </summary>
     /// <param name="id">Guid of employee</param>
     /// <response code="204">invlaid id</response>
@@ -277,7 +276,7 @@ public sealed partial class UserController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/{version}/Employee/GetEmployee/{id}
+    /// GET: {{host}}/api/{{version}}/Employee/GetEmployee/[id]
     /// </summary>
     /// <param name="id">Guid of employee</param>
     /// <response code="200">{employee view object}</response>
