@@ -1,5 +1,5 @@
 namespace [namespace];
-internal sealed class JwtProvider : IJwtProvider
+internal sealed partial class JwtProvider : IJwtProvider
 {
     private readonly IConfiguration _config;
     private readonly JwtOptions _optionsVal;
