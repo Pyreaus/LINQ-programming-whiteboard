@@ -3,7 +3,7 @@
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Produces(MediaTypeNames.Application.Json)]
 [Route("api/v1/[controller]")]
-public sealed partial class UserController : ControllerBase
+public sealed partial class {type}Controller : ControllerBase     //i.e. {type} = User /  UserController
 {
     #region [Infrastructure]
     private readonly IMapper _mapper;
@@ -65,6 +65,7 @@ public sealed partial class UserController : ControllerBase
     /// <response code="500">internal error</response>
     /// <response code="400"><see cref="Trainee"/> not modified</response>
     /// <response code="201"><see cref="Trainee"/> modified</response>
+    [ValidateAntiForgeryToken]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -179,6 +180,7 @@ public sealed partial class UserController : ControllerBase
     /// <response code="500">internal error</response>
     /// <response code="201"><see cref="TraineeViewModel"/> object</response>
     /// <response code="400"><see cref="TraineeViewModel"/> object not created</response>
+    [ValidateAntiForgeryToken]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -201,6 +203,7 @@ public sealed partial class UserController : ControllerBase
     /// <param name="modifyReq">request DTO</param>
     /// <response code="200"><see cref="AddModifyTraineeReq"/> object modified</response>
     /// <response code="400"><see cref="Trainee"/> object not modified</response>
+    [ValidateAntiForgeryToken]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(TraineeViewModel))]
@@ -223,6 +226,7 @@ public sealed partial class UserController : ControllerBase
     /// <response code="204">invlaid id</response>
     [Obsolete("Maintenance")]
     //--------------------------
+    [ValidateAntiForgeryToken]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
@@ -245,6 +249,7 @@ public sealed partial class UserController : ControllerBase
     /// <response code="400">not created</response>
     [Obsolete("Maintenance")]
     //--------------------------
+    [ValidateAntiForgeryToken]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(EmployeeViewModel))]
@@ -265,6 +270,7 @@ public sealed partial class UserController : ControllerBase
     /// <response code="200">deleted successfully</response>
     [Obsolete("Maintenance")]
     //--------------------------
+    [ValidateAntiForgeryToken]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ActionName("DeleteEmployee"),[Authorize(Policy="admin"),HttpDelete("[action]/{id:guid}")]
