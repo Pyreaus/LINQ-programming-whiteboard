@@ -8,15 +8,15 @@ internal sealed partial class JwtProvider : IJwtProvider
     {
         (_logger, _optionsVal, _config) = (logger, options.Value, configuration);
     }
-    public async string BuildToken(User user)
+    public string BuildToken(string path = "Jwt", params User[] user)
     {
         Claim[] claims = new Claim[] {
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new (JwtRegisteredClaimNames.Email, user.Email),
-            new (JwtRegisteredClaimNames.Sub, user.Id)
+            new (JwtRegisteredClaimNames.Email, user[0].Email),
+            new (JwtRegisteredClaimNames.Sub, user[0].Id),
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _optionsVal.SigningKey.ToCharArray() ?? _config["AppSettings:Jwt:SigningKey"]!.ToCharArray() 
+            _optionsVal.SigningKey.ToCharArray() ?? _config[$"{path}:Key"]!.ToCharArray() 
         ));                                                    
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var JWT = new JwtSecurityToken(
