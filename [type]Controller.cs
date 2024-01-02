@@ -31,6 +31,26 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
         IEnumerable<Skill?> skills = await _diaryService.GetSkills();
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
+
+    /// <summary>
+    /// GET: {{host}}/api/{{version}}/User/GetReviewers
+    /// </summary>
+    /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
+    /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
+    [ActionName("GetReviewers"),Authorize(Policy="admin"),HttpGet("[action]")]
+    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
+    {
+        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
+        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
+        foreach(UserViewModel? rev in reviewersVM) 
+        {
+            rev!.Role = "reviewer";
+            rev!.Photo = (bnetUrl + rev!.Photo?.ToString()) ?? "../../../assets/profilePic.png";
+        }
+        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
+    }
     
     /// <summary>
     /// GET: {{host}}/api/{{version}}/User/GetTraineesByReviewer/[pfid]
@@ -78,26 +98,6 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
         _userService.SetPair(_mapper.Map(addReq, currentTrainee!));
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
-    }
-
-    /// <summary>
-    /// GET: {{host}}/api/{{version}}/User/GetReviewers
-    /// </summary>
-    /// <response code="200"><see cref="IEnumerable{UserViewModel}"/> objects</response>
-    /// <response code="204"><see cref="IEnumerable{UserViewModel}"/> objects not found</response>
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
-    [ActionName("GetReviewers"),Authorize(Policy="admin"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers()
-    {
-        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync();
-        IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
-        foreach(UserViewModel? rev in reviewersVM) 
-        {
-            rev!.Role = "reviewer";
-            rev!.Photo = (bnetUrl + rev!.Photo?.ToString()) ?? "../../../assets/profilePic.png";
-        }
-        return (reviewersVM != null) && (typeof(List<PeopleFinderUser>) == reviewers!.GetType()) ? Ok(reviewersVM) : StatusCode(204);
     }
     
     /// <summary>
