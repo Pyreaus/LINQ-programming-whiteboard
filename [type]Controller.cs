@@ -10,11 +10,12 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     private readonly ClaimsPrincipal _claimsPrincipal;
     private readonly ILogger<UserController> _logger;
     private readonly string bnetUrl = "http://source/uploads/photos/";
-    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
+    private static TE Ex<TE, T>(object? exc) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), $"Expected: {typeof(T)}", nameof(exc))!;
+    private static TE Ex<TE>(object? exc = null) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), "untracked")!;
     private readonly IUserService _userService;
     public UserController(ClaimsPrincipal claimsPrincipal, ILogger<UserController> logger, IUserService userService, IMapper mapper)
     {
-        (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? NullArg<IUserService>(userService!), logger, mapper, claimsPrincipal);
+        (_userService, _logger, _mapper, _claimsPrincipal) = (userService ?? throw Ex<ArgumentNullException>(), logger, mapper, claimsPrincipal);
     }
     #endregion
 
