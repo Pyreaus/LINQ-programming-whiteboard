@@ -11,7 +11,7 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     private readonly ILogger<UserController> _logger;
     private readonly string bnetUrl = "http://source/uploads/photos/";
     private static TE Ex<TE, T>(object? exc) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), $"Expected: {typeof(T)}", nameof(exc))!;
-    private static TE Ex<TE>(object? exc = null) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), "untracked")!;
+    private static TE Ex<TE>(object? exc=null) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), "untracked")!;
     private readonly IUserService _userService;
     public UserController(ClaimsPrincipal claimsPrincipal, ILogger<UserController> logger, IUserService userService, IMapper mapper)
     {
