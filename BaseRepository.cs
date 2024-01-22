@@ -9,12 +9,13 @@ public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new()
 
     private IDbFactory<TR> DbFactory { get; }
     protected TR InitContext => _localContext ??= DbFactory.Init();
-    private static T NullArg<T>(T arg) => throw new ArgumentNullException(nameof(arg));
+    private static ET Ex<ET, TT>(object? exc) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), $"Expected: {typeof(TT)}", nameof(exc))!;
+    private static ET Ex<ET>(object? exc = null) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), "untracked")!;
     #endregion
     protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
     {
-        DbFactory = dbFactory ?? NullArg<IDbFactory<TR>>(dbFactory!);
-        (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? NullArg<ILogger<TL>>(logger!));
+        DbFactory = dbFactory ?? throw Ex<ArgumentNullException, IDbFactory<TR>>(dbFactory);
+        (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? throw Ex<ArgumentNullException>());
     }
     #region [implementation]
     public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
