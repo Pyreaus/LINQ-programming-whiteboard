@@ -10,7 +10,7 @@ public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new()
     private IDbFactory<TR> DbFactory { get; }
     protected TR InitContext => _localContext ??= DbFactory.Init();
     private static ET Ex<ET, TT>(object? exc) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), $"Expected: {typeof(TT)}", nameof(exc))!;
-    private static ET Ex<ET>(object? exc = null) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), "untracked")!;
+    private static ET Ex<ET>(object? exc = null) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), "untracked", nameof(exc))!;
     #endregion
     protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
     {
