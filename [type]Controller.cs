@@ -8,12 +8,13 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     #region [Infrastructure]
     private readonly IMapper _mapper;
     private readonly ServerOptions servers;
+    private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<UserController> _logger;
     private readonly ClaimsPrincipal _claimsPrincipal;
+    private static TE Ex<TE>(object? exc=null) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), "untracked", nameof(exc))!;
     private static TE Ex<TE, T>(object? exc) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), $"Expected: {typeof(T)}", nameof(exc))!;
-    private static TE Ex<TE>(object? exc=null) where TE : Exception => throw (TE)Activator.CreateInstance(typeof(TE), "untracked")!;
-    private readonly IUserService _userService;
+
     public UserController(ClaimsPrincipal claimsPrincipal, IOptions<ServerOptions> options, ILogger<UserController> logger, IConfiguration configuration, IMapper mapper, IUserService userService)
     {
         (servers, _userService, _configuration, _logger, _mapper, _claimsPrincipal) = (options.Value, userService ?? throw Ex<ArgumentNullException>(), configuration, logger, mapper, claimsPrincipal);
