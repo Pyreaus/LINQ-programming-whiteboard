@@ -29,9 +29,9 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<Skill>))]
     [ActionName("GetSkills"),Authorize(Policy="trainee//reviewer"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills(CancellationToken token)
+    public async Task<ActionResult<IEnumerable<Skill?>?>> GetSkills(CancellationToken ct)
     {
-        IEnumerable<Skill?> skills = await _diaryService.GetSkills(token);
+        IEnumerable<Skill?> skills = await _diaryService.GetSkills(ct);
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
 
@@ -49,11 +49,11 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
     [ActionName("SetPair"),Authorize(Policy="admin"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> SetPair(CancellationToken token, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    public async Task<ActionResult<TraineeViewModel>?> SetPair(CancellationToken ct, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
-        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid, token);
-        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid, token) is null)) return StatusCode(204);
-        _userService.SetPair(_mapper.Map(addReq, currentTrainee!), token);
+        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid, ct);
+        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid, ct) is null)) return StatusCode(204);
+        _userService.SetPair(_mapper.Map(addReq, currentTrainee!), ct);
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
         return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
     }
@@ -69,10 +69,10 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<TraineeViewModel>))]
     [ActionName("GetTraineesByReviewer"),Authorize(Policy="reviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer(CancellationToken token, [FromRoute] [ValidPfid] int pfid)
+    public async Task<ActionResult<IEnumerable<TraineeViewModel?>?>> GetTraineesByReviewer(CancellationToken ct, [FromRoute] [ValidPfid] int pfid)
     {
-        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync(token);
-        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid, token);
+        IEnumerable<PeopleFinderUser?> users = await _userService.GetPFUsersAsync(ct);
+        IEnumerable<Trainee?> trainees = await _userService.TraineesByReviewerAsync(pfid, ct);
         if ((users is null)||(trainees is null)) return StatusCode(404);
         IEnumerable<TraineeViewModel?> traineesVM = _mapper.Map<IEnumerable<Trainee?>,IEnumerable<TraineeViewModel>>(
             trainees.Where(
@@ -91,9 +91,9 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<UserViewModel>))]
     [ActionName("GetReviewers"),Authorize(Policy="admin"),HttpGet("[action]")]
-    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers(CancellationToken token)
+    public async Task<ActionResult<IEnumerable<UserViewModel?>?>> GetReviewers(CancellationToken ct)
     {
-        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync(token);
+        IEnumerable<PeopleFinderUser?> reviewers = await _userService.GetReviewersAsync(ct);
         IEnumerable<UserViewModel?> reviewersVM = _mapper.Map<IEnumerable<PeopleFinderUser?>,IEnumerable<UserViewModel>>(reviewers!);
         foreach(UserViewModel? rev in reviewersVM) 
         {
@@ -113,7 +113,7 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status511NetworkAuthenticationRequired)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
     [ActionName("GetUserType"),HttpGet("[action]")]
-    public async Task<ActionResult<UserViewModel?>> GetUserType(CancellationToken token, [FromServices] IWebHostEnvironment webHostEnvironment)
+    public async Task<ActionResult<UserViewModel?>> GetUserType(CancellationToken ct, [FromServices] IWebHostEnvironment webHostEnvironment)
     {
         IWebHostEnvironment env = webHostEnvironment ?? NullArg<IWebHostEnvironment>(webHostEnvironment!);
         if (_claimsPrincipal.Identity?.IsAuthenticated == true)
@@ -121,10 +121,10 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
             Claim? usernameClaim = _claimsPrincipal.FindFirst("DomainUsername");
             if (usernameClaim?.Value != null)
             {
-                PeopleFinderUser? user = await _userService.GetByDomainAsync(usernameClaim.Value, token);
+                PeopleFinderUser? user = await _userService.GetByDomainAsync(usernameClaim.Value, ct);
                 if (user != null && user?.PFID != null)
                 {
-                    string? role = await _userService.GetRoleByPfidAsync((int)user.PFID, token);
+                    string? role = await _userService.GetRoleByPfidAsync((int)user.PFID, ct);
                     UserViewModel? userVM = role != null ? _mapper.Map<PeopleFinderUser,UserViewModel>(user) : null;
                     userVM!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
                     userVM!.Role = role ?? "Unauthorized";
@@ -145,9 +145,9 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(IEnumerable<DiaryViewModel>))]
     [ActionName("GetDiariesPfid"),Authorize(Policy="trainee//reviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid(CancellationToken token, [FromRoute] [ValidPfid] int pfid)
+    public async Task<ActionResult<IEnumerable<DiaryViewModel?>?>> GetDiariesPfid(CancellationToken ct, [FromRoute] [ValidPfid] int pfid)
     {
-        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid, token);
+        IEnumerable<Diary?> diaries = await _diaryService.GetDiariesAsync(pfid, ct);
         IEnumerable<DiaryViewModel?> diaryVM = _mapper.Map<IEnumerable<Diary?>, IEnumerable<DiaryViewModel>>(diaries!);
         return (diaryVM != null) && (typeof(List<Diary>) == diaries!.GetType()) ? Ok(diaryVM) : StatusCode(204);
     }
@@ -163,10 +163,10 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(UserViewModel))]
     [ActionName("GetUserReviewer"),Authorize(Policy="trainee//reviewer"),HttpGet("[action]/{pfid:int}")]
-    public async Task<ActionResult<UserViewModel?>> GetUserReviewer(CancellationToken token, [FromRoute] [ValidPfid] int pfid)
+    public async Task<ActionResult<UserViewModel?>> GetUserReviewer(CancellationToken ct, [FromRoute] [ValidPfid] int pfid)
     {
-        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid, token);
-        PeopleFinderUser? reviewer = await _userService.ReviewerByTraineeAsync(pfid, token);
+        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid, ct);
+        PeopleFinderUser? reviewer = await _userService.ReviewerByTraineeAsync(pfid, ct);
         if ((trainee is null)||(reviewer is null)) return StatusCode(400);
         UserViewModel userVM = _mapper.Map<PeopleFinderUser?,UserViewModel>(reviewer);
         userVM!.Role = "Reviewer";
@@ -189,12 +189,12 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
     [ActionName("AssignTrainees"),Authorize(Policy="admin"),HttpPost("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel?>> AssignTrainees(CancellationToken token, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    public async Task<ActionResult<TraineeViewModel?>> AssignTrainees(CancellationToken ct, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
     {
-        if ((await _userService.GetPFUserAsync(pfid, token) is null)||(addReq is null)) return StatusCode(400);
+        if ((await _userService.GetPFUserAsync(pfid, ct) is null)||(addReq is null)) return StatusCode(400);
         Trainee? newTrainee = _mapper.Map<AddModifyTraineeReq,Trainee>(addReq!);
         newTrainee.TRAINEE_PFID = pfid.ToString();
-        _userService.AssignTrainees(newTrainee, token);   
+        _userService.AssignTrainees(newTrainee, ct);   
         TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(newTrainee!);
         return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = newTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
     }
@@ -211,12 +211,12 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(TraineeViewModel))]
     [ActionName("EditTrainee"),Authorize(Policy="admin//reviewer"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel?>> EditTrainee(CancellationToken token, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq modifyReq)
+    public async Task<ActionResult<TraineeViewModel?>> EditTrainee(CancellationToken ct, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq modifyReq)
     {
-        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid, token);
+        Trainee? trainee = await _userService.GetTraineeByPfidAsync(pfid, ct);
         if ((trainee is null)||(modifyReq is null)) return StatusCode(400);
         _mapper.Map<AddModifyTraineeReq?,Trainee>(modifyReq, trainee);
-        this._userService.UpdateTrainee(trainee, token);
+        this._userService.UpdateTrainee(trainee, ct);
         return StatusCode(200);
     }
 
@@ -232,9 +232,9 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK,Type=typeof(EmployeeViewModel))]
     [ActionName("GetEmployee"),Authorize(Policy="admin"),HttpGet("[action]/{id:guid}")]
-    public async Task<ActionResult<EmployeeViewModel?>> GetEmployee(CancellationToken token, [FromRoute] Guid id)
+    public async Task<ActionResult<EmployeeViewModel?>> GetEmployee(CancellationToken ct, [FromRoute] Guid id)
     {
-        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id, token);
+        Employee? employee = await _employeeService.GetEmployeeByIdAsync(id, ct);
         EmployeeViewModel employeeVM = _mapper.Map<Employee, EmployeeViewModel>(employee!);
         return (employee != null) && (typeof(Employee) == employee.GetType()) ? Ok(employeeVM) : StatusCode(204);
     }
