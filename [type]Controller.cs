@@ -34,29 +34,6 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
         IEnumerable<Skill?> skills = await _diaryService.GetSkills(ct);
         return (skills != null) && (typeof(List<Skill>) == skills!.GetType()) ? Ok(skills) : StatusCode(204);
     }
-
-    /// <summary>
-    /// PUT: {{host}}/api/{{version}}/User/SetPair/[pfid]
-    /// </summary>
-    /// <param name="pfid">PFID of trainee</param>
-    /// <param name="addReq">request DTO</param>
-    /// <response code="500">internal error</response>
-    /// <response code="400"><see cref="Trainee"/> not modified</response>
-    /// <response code="201"><see cref="Trainee"/> modified</response>
-    [ValidateAntiForgeryToken]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
-    [ActionName("SetPair"),Authorize(Policy="admin"),HttpPut("[action]/{pfid:int}")]
-    public async Task<ActionResult<TraineeViewModel>?> SetPair(CancellationToken ct, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
-    {
-        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid, ct);
-        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid, ct) is null)) return StatusCode(204);
-        _userService.SetPair(_mapper.Map(addReq, currentTrainee!), ct);
-        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
-        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
-    }
     
     /// <summary>
     /// GET: {{host}}/api/{{version}}/User/GetTraineesByReviewer/[pfid]
@@ -81,6 +58,29 @@ public sealed partial class {type}Controller : ControllerBase     //i.e. {type} 
         foreach (PeopleFinderUser? user in users) user!.Photo = (bnetUrl + user.Photo?.ToString()) ?? "../../../assets/profilePic.png";
         foreach (TraineeViewModel? trainee in traineesVM) _mapper.Map(users.FirstOrDefault(user => trainee?.TRAINEE_PFID == user?.PFID.ToString())!, trainee);
         return (trainees.GetType() == typeof(List<Trainee>)) && traineesVM != null ? Ok(traineesVM) : StatusCode(500);
+    }
+
+    /// <summary>
+    /// PUT: {{host}}/api/{{version}}/User/SetPair/[pfid]
+    /// </summary>
+    /// <param name="pfid">PFID of trainee</param>
+    /// <param name="addReq">request DTO</param>
+    /// <response code="500">internal error</response>
+    /// <response code="400"><see cref="Trainee"/> not modified</response>
+    /// <response code="201"><see cref="Trainee"/> modified</response>
+    [ValidateAntiForgeryToken]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status201Created,Type=typeof(TraineeViewModel))]
+    [ActionName("SetPair"),Authorize(Policy="admin"),HttpPut("[action]/{pfid:int}")]
+    public async Task<ActionResult<TraineeViewModel>?> SetPair(CancellationToken ct, [FromRoute] [ValidPfid] int pfid, [FromBody] AddModifyTraineeReq addReq)
+    {
+        Trainee? currentTrainee = await _userService.GetTraineeByPfidAsync(pfid, ct);
+        if ((currentTrainee is null)||(addReq is null)||(await _userService.GetPFUserAsync(pfid, ct) is null)) return StatusCode(204);
+        _userService.SetPair(_mapper.Map(addReq, currentTrainee!), ct);
+        TraineeViewModel traineeVM = _mapper.Map<Trainee,TraineeViewModel>(currentTrainee!);
+        return traineeVM != null ? CreatedAtAction(nameof(GetTraineesByReviewer), new { pfid = currentTrainee?.REVIEWER_PFID }, traineeVM) : StatusCode(500);
     }
 
     /// <summary>
