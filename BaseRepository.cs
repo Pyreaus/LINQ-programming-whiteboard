@@ -17,9 +17,9 @@ internal abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new
     
     private static Exception Ex(object? exc) => (exc == null) ? throw new ArgumentNullException(nameof(exc)) : 
     exc.GetType() == typeof(Exception) ? throw (Exception)exc : throw new Exception((string)exc);
+    /// <exception cref="ArgumentNullException"><see cref="RepositoryBase"/> failed dependancy</exception>
     /// <param name="dbFactory"></param>
     /// <param name="logger"></param> 
-    /// <exception cref="ArgumentNullException"><see cref="RepositoryBase"/> failed dependancy</exception>
     protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
     {
         DbFactory = dbFactory ?? throw Ex<ArgumentNullException, IDbFactory<TR>>(dbFactory);
