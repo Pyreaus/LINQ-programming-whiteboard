@@ -1,5 +1,5 @@
 namespace [namespace];
-public abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
+internal abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
                                                          where TR : DbContext
 {
     #region [infrastructure]
