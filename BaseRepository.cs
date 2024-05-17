@@ -1,4 +1,10 @@
 namespace [namespace];
+/// <summary>
+/// An EF-dependent, generic repository for data access
+/// </summary>
+/// <typeparam name="TR">Type of derived repository for <see cref="ILogger{TR}"/> and <see cref="_logger"/>.</typeparam>
+/// <typeparam name="TC">Type of context instance for <see cref="RepositoryBase{TE,TC,TR}"/>.</typeparam>
+/// <typeparam name="TE">Type of entity for <see cref="RepositoryBase{TE,TC,TR}"/>.</typeparam>
 internal abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new() 
                                                          where TR : DbContext
 {
