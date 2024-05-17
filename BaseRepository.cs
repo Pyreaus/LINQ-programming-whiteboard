@@ -9,14 +9,19 @@ internal abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new
 
     private IDbFactory<TR> DbFactory { get; }
     protected TR InitContext => _localContext ??= DbFactory.Init();
-    private static ET Ex<ET, TT>(object? exc) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), $"Expected: {typeof(TT)}", nameof(exc))!;
-    private static ET Ex<ET>(object? exc = null) where ET : Exception => throw (ET)Activator.CreateInstance(typeof(ET), "untracked", nameof(exc))!;
-    #endregion
+    
+    private static Exception Ex(object? exc) => (exc == null) ? throw new ArgumentNullException(nameof(exc)) : 
+    exc.GetType() == typeof(Exception) ? throw (Exception)exc : throw new Exception((string)exc);
+    
+    /// <param name="dbFactory"></param>
+    /// <param name="logger"></param> 
+    /// <exception cref="ArgumentNullException"><see cref="RepositoryBase"/> failed dependancy</exception>
     protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
     {
         DbFactory = dbFactory ?? throw Ex<ArgumentNullException, IDbFactory<TR>>(dbFactory);
         (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? throw Ex<ArgumentNullException>());
     }
+    #endregion
     #region [implementation]
     public virtual IQueryable<IGrouping<int, TE>> GroupBy(Expression<Func<TE, int>> keySelector) => _dbSet.GroupBy(keySelector);
     public virtual IEnumerable<TE?> GetMany(Expression<Func<TE, bool>> predicate, Func<IQueryable<TE>, IIncludableQueryable<TE, object>>? include = null, bool disableTracking = true)
