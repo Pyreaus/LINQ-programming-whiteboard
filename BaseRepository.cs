@@ -22,8 +22,8 @@ internal abstract partial class RepositoryBase<TE, TR, TL> where TE : class, new
     /// <param name="logger"></param> 
     protected RepositoryBase(IDbFactory<TR> dbFactory, ILogger<TL> logger)
     {
-        DbFactory = dbFactory ?? throw Ex<ArgumentNullException, IDbFactory<TR>>(dbFactory);
-        (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? throw Ex<ArgumentNullException>());
+        DbFactory = dbFactory ?? throw Ex(dbFactory);
+        (_dbSet, _logger) = (InitContext.Set<TE>(), logger ?? throw Ex(logger));
     }
     #endregion
     #region [implementation]
